@@ -43,6 +43,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_details);
 
+
         imageModelArrayList = getIntent().getParcelableArrayListExtra("data");
         currentPosition = getIntent().getIntExtra("position", 0);
 
