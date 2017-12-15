@@ -4,24 +4,19 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.yalantis.guillotine.animation.GuillotineAnimation;
@@ -41,24 +36,33 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<FoldersModel> foldersModelArrayList = new ArrayList<>();
     Toolbar toolbar;
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    //for guillotine menu
+    FrameLayout root;
+    View contentHamburger;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        root=findViewById(R.id.root);
+        contentHamburger=findViewById(R.id.content_hamburger);
         toolbar = findViewById(R.id.mainActivityToolBar);
         recyclerView = findViewById(R.id.foldersRecyclerView);
+
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         foldersAdapter = new FoldersAdapter(this, foldersModelArrayList);
         recyclerView.setAdapter(foldersAdapter);
 
-
-        String title = getResources().getString(R.string.app_name);
-        toolbar.setTitle(title);
-        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.darkColour));
-        toolbar.setBackgroundColor(Color.BLACK);
         setSupportActionBar(toolbar);
+        View guillotineMenu = LayoutInflater.from(this).inflate(R.layout.guillotine_menu, null);
+        root.addView(guillotineMenu);
+
+        new GuillotineAnimation.GuillotineBuilder(guillotineMenu, guillotineMenu.findViewById(R.id.guillotine_hamburger), contentHamburger)
+                .setStartDelay(100)
+                .setActionBarViewForAnimation(toolbar)
+                .setClosedOnStart(true)
+                .build();
 
         recyclerView.addOnItemTouchListener(new ImageClickedListener(this, new OnItemClickListener() {
             @Override
@@ -87,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
             loadImages();
         }
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -195,27 +198,5 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Log.d("TAG","CLICKED");
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 }
 
