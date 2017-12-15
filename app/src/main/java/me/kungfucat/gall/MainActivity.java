@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,9 +14,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -32,24 +36,30 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSIONS_CODE = 100;
     ArrayList<ImageModel> imageModelsList = new ArrayList<>();
     ArrayList<FoldersModel> foldersModelArrayList = new ArrayList<>();
-//    public static String TEMP_IMG = "https://picsum.photos/400/600/?image=";
+    Toolbar toolbar;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        toolbar=findViewById(R.id.mainActivityToolBar);
         recyclerView = findViewById(R.id.foldersRecyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-//        loadImages();
         foldersAdapter = new FoldersAdapter(this, foldersModelArrayList);
         recyclerView.setAdapter(foldersAdapter);
+        String title=getResources().getString(R.string.app_name);toolbar.setTitle("Gall");
+        toolbar.setTitle(title);
+        toolbar.setTitleTextColor(ContextCompat.getColor(this,R.color.darkColour));
+        toolbar.setBackgroundColor(Color.BLACK);
 
         recyclerView.addOnItemTouchListener(new ImageClickedListener(this, new OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 Intent intent = new Intent(getApplicationContext(), SingleFolderActivity.class);
                 intent.putParcelableArrayListExtra("data", foldersModelArrayList.get(position).getImageModelsList());
+                intent.putExtra("bucket",foldersModelArrayList.get(position).getFoldersName()) ;
                 startActivity(intent);
             }
         }));
@@ -105,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                 null,       // Selection arguments (none)
                 orderBy + " DESC"       // Ordering
         );
-        Log.i("ListingImages", " query count=" + cur.getCount());
+//        Log.i("ListingImages", " query count=" + cur.getCount());
 
         if (cur.moveToFirst()) {
             String bucket;
@@ -121,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
                 bucket = cur.getString(bucketColumn);
                 date = cur.getString(dateColumn);
 
+                bucket = bucket.substring(0, 1).toUpperCase() + bucket.substring(1).toLowerCase();
                 ImageModel imageModel = new ImageModel();
                 imageModel.setTitle(bucket);
                 imageModel.setUrl(cur.getString(columnIndex));
@@ -137,14 +148,40 @@ public class MainActivity extends AppCompatActivity {
                     map.put(bucket, current);
                 }
             } while (cur.moveToNext());
+
             Set<Map.Entry<String, ArrayList<ImageModel>>> st = map.entrySet();
 
+            HashMap<String, ArrayList<ImageModel>> newMap = new HashMap<>();
+
             for (Map.Entry<String, ArrayList<ImageModel>> me : st) {
+                if (me.getValue().size() < 5) {
+                    if (newMap.containsKey("Others")) {
+
+                        ArrayList<ImageModel> temp = newMap.get("Others");
+
+                        for (int i = 0; i < me.getValue().size(); i++) {
+                            temp.add(me.getValue().get(i));
+                        }
+
+                        newMap.put("Others", temp);
+                    } else {
+
+                        newMap.put("Others", me.getValue());
+                    }
+                } else {
+
+                    newMap.put(me.getKey(), me.getValue());
+                }
+            }
+
+
+            Set<Map.Entry<String, ArrayList<ImageModel>>> newSet = newMap.entrySet();
+
+            for (Map.Entry<String, ArrayList<ImageModel>> me : newSet) {
                 FoldersModel foldersModel = new FoldersModel();
                 foldersModel.setFoldersName(me.getKey());
                 foldersModel.setImageModelsList(me.getValue());
                 foldersModelArrayList.add(foldersModel);
-                Log.d("NAME", me.getKey());
             }
         }
 
