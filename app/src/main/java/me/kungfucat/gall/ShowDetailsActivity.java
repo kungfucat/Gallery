@@ -3,14 +3,18 @@ package me.kungfucat.gall;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,10 +38,11 @@ import java.util.Random;
 
 public class ShowDetailsActivity extends AppCompatActivity {
     ViewPager viewPager;
-
+    Toolbar toolbar;
     ArrayList<ImageModel> imageModelArrayList = null;
     public static int currentPosition;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +51,12 @@ public class ShowDetailsActivity extends AppCompatActivity {
 
         imageModelArrayList = getIntent().getParcelableArrayListExtra("data");
         currentPosition = getIntent().getIntExtra("position", 0);
+
+        toolbar=findViewById(R.id.toolBarshowDetails);
+        toolbar.setTitle(imageModelArrayList.get(currentPosition).getTitle());
+        toolbar.setTitleTextColor(ContextCompat.getColor(this,R.color.darkColour));
+        toolbar.setBackgroundColor(Color.BLACK);
+        toolbar.setElevation(0.5f);
 
         viewPager = findViewById(R.id.viewPager);
         viewPager.setAdapter(new MyAdapter(this,getSupportFragmentManager(), imageModelArrayList));
@@ -62,8 +73,8 @@ public class ShowDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                setTitle(imageModelArrayList.get(position).title);
                 currentPosition = position;
+                toolbar.setTitle(imageModelArrayList.get(currentPosition).getTitle());
             }
 
             @Override
@@ -152,7 +163,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
         @Override
         public boolean onLongClick(View view) {
             int position=ShowDetailsActivity.currentPosition;
-            Log.d("TAG", String.valueOf(position));
+//            Log.d("TAG", String.valueOf(position));
             ImageView imageView= (ImageView) view;
             return false;
         }

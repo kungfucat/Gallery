@@ -29,7 +29,6 @@ public class FoldersAdapter extends RecyclerView.Adapter<FoldersAdapter.FolderVi
         this.context = context;
         inflater = LayoutInflater.from(context);
         foldersModelList = list;
-//        Log.d("TAG!", String.valueOf(foldersModelList.size()));
     }
 
     @Override
