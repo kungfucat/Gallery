@@ -1,6 +1,5 @@
 package me.kungfucat.gall;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -11,10 +10,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.Explode;
+import android.transition.Transition;
 import android.view.View;
+import android.view.animation.OvershootInterpolator;
 
 import java.util.ArrayList;
 
+import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
+import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
+import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter;
+import jp.wasabeef.recyclerview.adapters.SlideInLeftAnimationAdapter;
+import jp.wasabeef.recyclerview.adapters.SlideInRightAnimationAdapter;
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import me.kungfucat.gall.interfaces.OnItemClickListener;
 
 public class SingleFolderActivity extends AppCompatActivity {
@@ -30,22 +38,32 @@ public class SingleFolderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_single_folder);
-        toolbar=findViewById(R.id.toolBarForSingleFolder);
-        recyclerView=findViewById(R.id.recyclerViewForAllImages);
+        toolbar = findViewById(R.id.toolBarForSingleFolder);
+        recyclerView = findViewById(R.id.recyclerViewForAllImages);
+
 
         imageModelsList = getIntent().getParcelableArrayListExtra("data");
-        String title=getIntent().getStringExtra("bucket");
-        if(title==null || title==""){
-            title=getResources().getString(R.string.app_name);
+        String title = getIntent().getStringExtra("bucket");
+        if (title == null || title == "") {
+            title = getResources().getString(R.string.app_name);
         }
         toolbar.setTitle(title);
-        toolbar.setTitleTextColor(ContextCompat.getColor(this,R.color.darkColour));
+        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.darkColour));
         toolbar.setBackgroundColor(Color.BLACK);
         toolbar.setElevation(0.5f);
 
-        adapter=new MyAdapter(this,imageModelsList);
+        adapter = new MyAdapter(this, imageModelsList);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
-        recyclerView.setAdapter(adapter);
+
+
+
+//        recyclerView.setAdapter(adapter);
+
+        ScaleInAnimationAdapter scaleInAnimationAdapter = new ScaleInAnimationAdapter(adapter);
+        scaleInAnimationAdapter.setDuration(600);
+        recyclerView.setAdapter(new SlideInLeftAnimationAdapter(scaleInAnimationAdapter));
+
+
 
         recyclerView.addOnItemTouchListener(new ImageClickedListener(this, new OnItemClickListener() {
             @Override
@@ -58,5 +76,6 @@ public class SingleFolderActivity extends AppCompatActivity {
             }
         }));
     }
+
 }
 

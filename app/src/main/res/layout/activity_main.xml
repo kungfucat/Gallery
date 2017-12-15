@@ -6,16 +6,23 @@
     android:orientation="vertical"
     tools:context="me.kungfucat.gall.MainActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/mainActivityToolBar"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/mainActivityToolBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </android.support.design.widget.AppBarLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/foldersRecyclerView"
-        android:padding="@dimen/padding"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:padding="@dimen/padding">
 
     </android.support.v7.widget.RecyclerView>
 
