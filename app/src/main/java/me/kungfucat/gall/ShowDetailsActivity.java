@@ -38,7 +38,7 @@ import java.util.Random;
 
 public class ShowDetailsActivity extends AppCompatActivity {
     ViewPager viewPager;
-    Toolbar toolbar;
+//    Toolbar toolbar;
     ArrayList<ImageModel> imageModelArrayList = null;
     public static int currentPosition;
 
@@ -52,11 +52,11 @@ public class ShowDetailsActivity extends AppCompatActivity {
         imageModelArrayList = getIntent().getParcelableArrayListExtra("data");
         currentPosition = getIntent().getIntExtra("position", 0);
 
-        toolbar=findViewById(R.id.toolBarshowDetails);
-        toolbar.setTitle(imageModelArrayList.get(currentPosition).getTitle());
-        toolbar.setTitleTextColor(ContextCompat.getColor(this,R.color.darkColour));
-        toolbar.setBackgroundColor(Color.BLACK);
-        toolbar.setElevation(0.5f);
+//        toolbar=findViewById(R.id.toolBarshowDetails);
+//        toolbar.setTitle(imageModelArrayList.get(currentPosition).getTitle());
+//        toolbar.setTitleTextColor(ContextCompat.getColor(this,R.color.darkColour));
+//        toolbar.setBackgroundColor(Color.BLACK);
+//        toolbar.setElevation(0.5f);
 
         viewPager = findViewById(R.id.viewPager);
         viewPager.setAdapter(new MyAdapter(this,getSupportFragmentManager(), imageModelArrayList));
@@ -74,7 +74,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 currentPosition = position;
-                toolbar.setTitle(imageModelArrayList.get(currentPosition).getTitle());
+//                toolbar.setTitle(imageModelArrayList.get(currentPosition).getTitle());
             }
 
             @Override
