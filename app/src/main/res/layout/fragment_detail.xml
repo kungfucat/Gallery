@@ -1,14 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.github.chrisbanes.photoview.PhotoView
-        android:id="@+id/imageDetails"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/imageToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:background="#66000000"
+        android:elevation="1dp"
+        android:visibility="gone" />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter" />
+        android:orientation="vertical">
 
-</LinearLayout>
+
+        <com.github.chrisbanes.photoview.PhotoView
+            android:id="@+id/imageDetails"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter" />
+
+    </LinearLayout>
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/bottomNavigationBar"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:layout_gravity="bottom"
+        android:background="#66000000"
+        android:elevation="1dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/shareIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:src="@drawable/ic_share" />
+
+            <ImageView
+                android:id="@+id/deleteIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:src="@drawable/ic_delete" />
+
+            <ImageView
+                android:id="@+id/descriptionIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:src="@drawable/ic_description" />
+
+            <ImageView
+                android:id="@+id/moreIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:src="@drawable/ic_more" />
+
+        </LinearLayout>
+    </android.support.v7.widget.Toolbar>
+
+</FrameLayout><!--100% — FF--><!--95% — F2--><!--90% — E6--><!--85% — D9--><!--80% — CC--><!--75% — BF--><!--70% — B3--><!--65% — A6--><!--60% — 99--><!--55% — 8C--><!--50% — 80--><!--45% — 73--><!--40% — 66--><!--35% — 59--><!--30% — 4D--><!--25% — 40--><!--20% — 33--><!--15% — 26--><!--10% — 1A--><!--5% — 0D--><!--0% — 00-->

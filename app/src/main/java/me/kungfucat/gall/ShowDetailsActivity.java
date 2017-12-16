@@ -3,22 +3,23 @@ package me.kungfucat.gall;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.GestureDetector;
+import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.eftimoff.viewpagertransformers.AccordionTransformer;
@@ -39,16 +40,13 @@ import java.util.Random;
 
 public class ShowDetailsActivity extends AppCompatActivity {
     ViewPager viewPager;
-//    Toolbar toolbar;
-    ArrayList<ImageModel> imageModelArrayList = null;
+    public static ArrayList<ImageModel> imageModelArrayList = null;
     public static int currentPosition;
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_details);
-
 
         imageModelArrayList = getIntent().getParcelableArrayListExtra("data");
         currentPosition = getIntent().getIntExtra("position", 0);
@@ -60,7 +58,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
 //        toolbar.setElevation(0.5f);
 
         viewPager = findViewById(R.id.viewPager);
-        viewPager.setAdapter(new MyAdapter(this,getSupportFragmentManager(), imageModelArrayList));
+        viewPager.setAdapter(new MyAdapter(this, getSupportFragmentManager(), imageModelArrayList));
         setRandomPagerAdapter();
 
         viewPager.setCurrentItem(currentPosition);
@@ -127,7 +125,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
     }
 
     public static class ImageFragment extends Fragment {
-        public static ArrayList<ImageModel> models=new ArrayList<>();
+        public static ArrayList<ImageModel> models = new ArrayList<>();
 
         public static ImageFragment newInstance(int position, String title, String url) {
             ImageFragment fragment = new ImageFragment();
@@ -146,10 +144,36 @@ public class ShowDetailsActivity extends AppCompatActivity {
             View view = inflater.inflate(R.layout.fragment_detail, container, false);
             PhotoView photoView = view.findViewById(R.id.imageDetails);
 
+            final Toolbar imageToolbar = view.findViewById(R.id.imageToolbar);
+            final Toolbar bottomNavigationBar = view.findViewById(R.id.bottomNavigationBar);
+
+
+            imageToolbar.setTitleTextColor(Color.WHITE);
+            int position = ShowDetailsActivity.currentPosition + 1;
+            String bucket = ShowDetailsActivity.imageModelArrayList.get(position).getTitle();
+            imageToolbar.setTitle(bucket + " " + position);
+            final boolean[] hidden = {true};
+
+
             photoView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.d("TAG","CLICKED");
+                    if (hidden[0]) {
+                        bottomNavigationBar.setVisibility(View.VISIBLE);
+                        imageToolbar.setVisibility(View.VISIBLE);
+
+                        bottomNavigationBar.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
+                        imageToolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
+
+                        hidden[0] = false;
+                    } else {
+                        //no need to hide it immediately
+//                        imageToolbar.setVisibility(View.GONE);
+                        bottomNavigationBar.animate().translationY(bottomNavigationBar.getTop()).setInterpolator(new AccelerateInterpolator()).start();
+                        imageToolbar.animate().translationY(-imageToolbar.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
+
+                        hidden[0] = true;
+                    }
                 }
             });
 
@@ -170,11 +194,11 @@ public class ShowDetailsActivity extends AppCompatActivity {
         public ArrayList<ImageModel> imageModelArrayList = null;
         Context context;
 
-        public MyAdapter(Context context,FragmentManager fm, ArrayList<ImageModel> im) {
+        public MyAdapter(Context context, FragmentManager fm, ArrayList<ImageModel> im) {
             super(fm);
             imageModelArrayList = im;
-            this.context=context;
-            ImageFragment.models=im;
+            this.context = context;
+            ImageFragment.models = im;
         }
 
         @Override
