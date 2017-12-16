@@ -1,4 +1,4 @@
-# A simple gallery app - Gall
+# A simple gallery app - Gallerina
 
 Screenshots : 
 
