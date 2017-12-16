@@ -11,12 +11,12 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -32,6 +32,7 @@ import com.eftimoff.viewpagertransformers.RotateUpTransformer;
 import com.eftimoff.viewpagertransformers.TabletTransformer;
 import com.eftimoff.viewpagertransformers.ZoomInTransformer;
 import com.eftimoff.viewpagertransformers.ZoomOutSlideTransformer;
+import com.github.chrisbanes.photoview.PhotoView;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -125,7 +126,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
         }
     }
 
-    public static class ImageFragment extends Fragment implements View.OnLongClickListener {
+    public static class ImageFragment extends Fragment {
         public static ArrayList<ImageModel> models=new ArrayList<>();
 
         public static ImageFragment newInstance(int position, String title, String url) {
@@ -140,13 +141,18 @@ public class ShowDetailsActivity extends AppCompatActivity {
             return fragment;
         }
 
-        @Nullable
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.fragment_detail, container, false);
-            ImageView imageView = view.findViewById(R.id.imageDetails);
+            PhotoView photoView = view.findViewById(R.id.imageDetails);
 
-            imageView.setOnLongClickListener(this);
+            photoView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("TAG","CLICKED");
+                }
+            });
+
 
             Bundle bundle = getArguments();
             if (bundle != null) {
@@ -154,18 +160,9 @@ public class ShowDetailsActivity extends AppCompatActivity {
                         .load(bundle.getString("url"))
                         .thumbnail(0.5f)
                         .placeholder(new ColorDrawable(Color.BLACK))
-                        .into(imageView);
+                        .into(photoView);
             }
             return view;
-        }
-
-        //for grey scaled images
-        @Override
-        public boolean onLongClick(View view) {
-            int position=ShowDetailsActivity.currentPosition;
-//            Log.d("TAG", String.valueOf(position));
-            ImageView imageView= (ImageView) view;
-            return false;
         }
     }
 

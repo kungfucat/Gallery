@@ -45,8 +45,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        root=findViewById(R.id.root);
-        contentHamburger=findViewById(R.id.content_hamburger);
+        root = findViewById(R.id.root);
+        contentHamburger = findViewById(R.id.content_hamburger);
         toolbar = findViewById(R.id.mainActivityToolBar);
         recyclerView = findViewById(R.id.foldersRecyclerView);
 
@@ -54,9 +54,13 @@ public class MainActivity extends AppCompatActivity {
         foldersAdapter = new FoldersAdapter(this, foldersModelArrayList);
         recyclerView.setAdapter(foldersAdapter);
 
+
         setSupportActionBar(toolbar);
+
+        //main steps
         View guillotineMenu = LayoutInflater.from(this).inflate(R.layout.guillotine_menu, null);
         root.addView(guillotineMenu);
+
 
         new GuillotineAnimation.GuillotineBuilder(guillotineMenu, guillotineMenu.findViewById(R.id.guillotine_hamburger), contentHamburger)
                 .setStartDelay(100)
@@ -185,7 +189,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-
             Set<Map.Entry<String, ArrayList<ImageModel>>> newSet = newMap.entrySet();
 
             for (Map.Entry<String, ArrayList<ImageModel>> me : newSet) {
@@ -195,8 +198,6 @@ public class MainActivity extends AppCompatActivity {
                 foldersModelArrayList.add(foldersModel);
             }
         }
-
     }
-
 }
 

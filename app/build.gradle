@@ -43,4 +43,13 @@ dependencies {
     compile 'jp.wasabeef:recyclerview-animators:2.2.7'
 //Guillotine style menu
     compile 'com.github.Yalantis:GuillotineMenu-Android:1.2'
+    //firebase ananlytics
+    compile 'com.google.firebase:firebase-core:11.6.2'
+
+    compile 'com.github.ganfra:material-spinner:2.0.0'
+
+    //for zoomable imageview
+    compile 'com.github.chrisbanes:PhotoView:2.0.0'
 }
+
+apply plugin: 'com.google.gms.google-services'
