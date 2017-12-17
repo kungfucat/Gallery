@@ -54,13 +54,11 @@ public class MainActivity extends AppCompatActivity {
         foldersAdapter = new FoldersAdapter(this, foldersModelArrayList);
         recyclerView.setAdapter(foldersAdapter);
 
-
         setSupportActionBar(toolbar);
 
         //main steps
         View guillotineMenu = LayoutInflater.from(this).inflate(R.layout.guillotine_menu, null);
         root.addView(guillotineMenu);
-
 
         new GuillotineAnimation.GuillotineBuilder(guillotineMenu, guillotineMenu.findViewById(R.id.guillotine_hamburger), contentHamburger)
                 .setStartDelay(100)

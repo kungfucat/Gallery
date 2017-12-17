@@ -1,27 +1,30 @@
 package me.kungfucat.gall;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.eftimoff.viewpagertransformers.AccordionTransformer;
 import com.eftimoff.viewpagertransformers.BackgroundToForegroundTransformer;
 import com.eftimoff.viewpagertransformers.CubeOutTransformer;
@@ -34,7 +37,10 @@ import com.eftimoff.viewpagertransformers.TabletTransformer;
 import com.eftimoff.viewpagertransformers.ZoomInTransformer;
 import com.eftimoff.viewpagertransformers.ZoomOutSlideTransformer;
 import com.github.chrisbanes.photoview.PhotoView;
+import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
+import com.github.javiersantos.materialstyleddialogs.enums.Style;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -51,12 +57,6 @@ public class ShowDetailsActivity extends AppCompatActivity {
         imageModelArrayList = getIntent().getParcelableArrayListExtra("data");
         currentPosition = getIntent().getIntExtra("position", 0);
 
-//        toolbar=findViewById(R.id.toolBarshowDetails);
-//        toolbar.setTitle(imageModelArrayList.get(currentPosition).getTitle());
-//        toolbar.setTitleTextColor(ContextCompat.getColor(this,R.color.darkColour));
-//        toolbar.setBackgroundColor(Color.BLACK);
-//        toolbar.setElevation(0.5f);
-
         viewPager = findViewById(R.id.viewPager);
         viewPager.setAdapter(new MyAdapter(this, getSupportFragmentManager(), imageModelArrayList));
         setRandomPagerAdapter();
@@ -72,8 +72,11 @@ public class ShowDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
+//                Log.d("TAG", position + "");
+//                View view = viewPager.getFocusedChild();
+//                Toolbar toolbar = view.findViewById(R.id.imageToolbar);
+
                 currentPosition = position;
-//                toolbar.setTitle(imageModelArrayList.get(currentPosition).getTitle());
             }
 
             @Override
@@ -139,21 +142,33 @@ public class ShowDetailsActivity extends AppCompatActivity {
             return fragment;
         }
 
+
         @Override
-        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.fragment_detail, container, false);
             PhotoView photoView = view.findViewById(R.id.imageDetails);
+
+            Bundle bundle = getArguments();
+            final int position = bundle.getInt("position");
+            final String uriOfImage = bundle.getString("url");
+            final String title = bundle.getString("title");
+
 
             final Toolbar imageToolbar = view.findViewById(R.id.imageToolbar);
             final Toolbar bottomNavigationBar = view.findViewById(R.id.bottomNavigationBar);
 
+            ImageView deleteImageView = view.findViewById(R.id.deleteIcon);
+            ImageView shareImageView = view.findViewById(R.id.shareIcon);
+            ImageView moreImageView = view.findViewById(R.id.moreIcon);
+            ImageView descriptionImageView = view.findViewById(R.id.descriptionIcon);
 
             imageToolbar.setTitleTextColor(Color.WHITE);
-            int position = ShowDetailsActivity.currentPosition + 1;
-            String bucket = ShowDetailsActivity.imageModelArrayList.get(position).getTitle();
-            imageToolbar.setTitle(bucket + " " + position);
+            //remove 0 indexing for the user
+            int positionToShow = position + 1;
+            String bucket = bundle.getString("title");
+            imageToolbar.setTitle(bucket + " " + positionToShow);
             final boolean[] hidden = {true};
-
+            final Vibrator vibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
 
             photoView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -177,15 +192,93 @@ public class ShowDetailsActivity extends AppCompatActivity {
                 }
             });
 
+            shareImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Uri uri = Uri.parse(uriOfImage);
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType("image/*");
+                    intent.putExtra(Intent.EXTRA_TEXT, "");
+                    intent.putExtra(Intent.EXTRA_STREAM, uri);
+                    startActivity(Intent.createChooser(intent, "Share"));
+                    vibrator.vibrate(100);
+                }
+            });
 
-            Bundle bundle = getArguments();
-            if (bundle != null) {
-                GlideApp.with(getActivity())
-                        .load(bundle.getString("url"))
-                        .thumbnail(0.5f)
-                        .placeholder(new ColorDrawable(Color.BLACK))
-                        .into(photoView);
-            }
+
+            deleteImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final int pos = position + 1;
+                    vibrator.vibrate(100);
+                    final File imageToDelete = new File(uriOfImage);
+                    if (imageToDelete.exists()) {
+                        new MaterialStyledDialog
+                                .Builder(getActivity())
+                                .setTitle("Delete")
+                                .setStyle(Style.HEADER_WITH_TITLE)
+                                .setHeaderColor(R.color.black)
+                                .setDescription("Are you sure to delete this image?")
+                                .withDarkerOverlay(true)
+                                .setCancelable(true)
+                                .setPositiveText("Yes")
+                                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                    @Override
+                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+
+                                        if (imageToDelete.delete()) {
+
+                                            getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(uriOfImage))));
+                                            ShowDetailsActivity.imageModelArrayList.remove(pos-1);
+                                            Intent intent=new Intent(getActivity(),SingleFolderActivity.class);
+                                            intent.putExtra("bucket",title);
+                                            intent.putExtra("data", ShowDetailsActivity.imageModelArrayList);
+                                            startActivity(intent);
+//                                            Toast.makeText(getActivity(), "Successfully Deleted", Toast.LENGTH_LONG).show();
+                                        } else {
+                                            Toast.makeText(getActivity(), "Unsuccessful", Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                })
+                                .setNegativeText("No")
+                                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                                    @Override
+                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+
+                                    }
+                                })
+                                .show();
+
+                    } else {
+                        Toast.makeText(getActivity(), "Unsuccessful", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+
+
+            descriptionImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    vibrator.vibrate(100);
+                    Intent intent = new Intent(getActivity(), DescriptionOfPhotoActivity.class);
+                    startActivity(intent);
+                }
+            });
+
+            moreImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    vibrator.vibrate(100);
+                    //TODO : add extra features
+                }
+            });
+
+            GlideApp.with(getActivity())
+                    .load(uriOfImage)
+                    .thumbnail(0.5f)
+                    .placeholder(new ColorDrawable(Color.BLACK))
+                    .into(photoView);
+
             return view;
         }
     }

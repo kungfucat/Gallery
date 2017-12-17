@@ -44,7 +44,7 @@ public class SingleFolderActivity extends AppCompatActivity {
 
         imageModelsList = getIntent().getParcelableArrayListExtra("data");
         String title = getIntent().getStringExtra("bucket");
-        if (title == null || title == "") {
+        if (title == null || title.equals("")) {
             title = getResources().getString(R.string.app_name);
         }
         toolbar.setTitle(title);
@@ -55,13 +55,12 @@ public class SingleFolderActivity extends AppCompatActivity {
         adapter = new MyAdapter(this, imageModelsList);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
 
-
-
 //        recyclerView.setAdapter(adapter);
+//        ScaleInAnimationAdapter scaleInAnimationAdapter = new ScaleInAnimationAdapter(adapter);
+//        scaleInAnimationAdapter.setDuration(600);
+//        recyclerView.setAdapter(new SlideInLeftAnimationAdapter(scaleInAnimationAdapter));
 
-        ScaleInAnimationAdapter scaleInAnimationAdapter = new ScaleInAnimationAdapter(adapter);
-        scaleInAnimationAdapter.setDuration(600);
-        recyclerView.setAdapter(new SlideInLeftAnimationAdapter(scaleInAnimationAdapter));
+        recyclerView.setAdapter(new SlideInLeftAnimationAdapter(adapter));
 
 
 
@@ -77,5 +76,11 @@ public class SingleFolderActivity extends AppCompatActivity {
         }));
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent=new Intent(this,MainActivity.class);
+        startActivity(intent);
+        super.onBackPressed();
+    }
 }
 

@@ -50,6 +50,9 @@ dependencies {
 
     //for zoomable imageview
     compile 'com.github.chrisbanes:PhotoView:2.0.0'
+
+    compile 'com.github.javiersantos:MaterialStyledDialogs:2.1'
 }
+
 
 apply plugin: 'com.google.gms.google-services'
