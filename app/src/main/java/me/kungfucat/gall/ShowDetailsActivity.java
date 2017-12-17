@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -45,10 +44,7 @@ import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.github.javiersantos.materialstyleddialogs.enums.Style;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
 import java.util.Random;
 
 public class ShowDetailsActivity extends AppCompatActivity {
@@ -144,7 +140,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
             args.putInt("position", position);
             args.putString("title", title);
             args.putString("url", url);
-            args.putString("date",date);
+            args.putString("date", date);
             fragment.setArguments(args);
 
             return fragment;
@@ -160,7 +156,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
             final int position = bundle.getInt("position");
             final String uriOfImage = bundle.getString("url");
             final String title = bundle.getString("title");
-            String dateTaken=bundle.getString("date");
+            String dateTaken = bundle.getString("date");
 
 
             final Toolbar imageToolbar = view.findViewById(R.id.imageToolbar);
@@ -171,6 +167,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
             ImageView moreImageView = view.findViewById(R.id.moreIcon);
             ImageView descriptionImageView = view.findViewById(R.id.descriptionIcon);
             imageToolbar.setTitleTextColor(Color.WHITE);
+
             //remove 0 indexing for the user
             int positionToShow = position + 1;
             String bucket = bundle.getString("title");
@@ -180,6 +177,10 @@ public class ShowDetailsActivity extends AppCompatActivity {
 
             final LinearLayout rootOfDetails = view.findViewById(R.id.rootOfDetails);
             final boolean[] areDetailsShown = {false};
+
+            final LinearLayout rootOfMore = view.findViewById(R.id.rootOfMore);
+            final boolean[] moreLayoutIsVisible = {false};
+
             TextView textView1 = view.findViewById(R.id.textView1);
             TextView textView2 = view.findViewById(R.id.textView2);
             TextView textView3 = view.findViewById(R.id.textView3);
@@ -193,7 +194,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
             textView1.setText(textView1String);
             textView2.setText(textView2String);
 
-            String dateToShow="Date & Time : "+ dateTaken;
+            String dateToShow = "Date & Time : " + dateTaken;
             textView3.setText(dateToShow);
 
             long length = file.length();
@@ -201,13 +202,14 @@ public class ShowDetailsActivity extends AppCompatActivity {
             String textView4String;
             long mbLength = length / 1024;
             if (mbLength != 0) {
-                length /= 1024;
-                textView4String = "Size : " + mbLength + " MB and " + length + " KB";
+                length /= 102;
+                textView4String = "Size : " + mbLength + "." + length + " MB";
             } else {
                 textView4String = "Size : " + length + " KB";
             }
 
             textView4.setText(textView4String);
+
 
             photoView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -223,11 +225,13 @@ public class ShowDetailsActivity extends AppCompatActivity {
                     } else {
                         //no need to hide it immediately
 //                        imageToolbar.setVisibility(View.GONE);
-                        areDetailsShown[0] = false;
                         rootOfDetails.animate().translationY(rootOfDetails.getTop()).setInterpolator(new AccelerateInterpolator()).start();
                         bottomNavigationBar.animate().translationY(bottomNavigationBar.getTop()).setInterpolator(new AccelerateInterpolator()).start();
                         imageToolbar.animate().translationY(-imageToolbar.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
+                        rootOfMore.animate().translationY(rootOfMore.getTop()).setInterpolator(new AccelerateInterpolator()).start();
 
+                        moreLayoutIsVisible[0] = false;
+                        areDetailsShown[0] = false;
                         hidden[0] = true;
                     }
                 }
@@ -236,13 +240,13 @@ public class ShowDetailsActivity extends AppCompatActivity {
             shareImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    vibrator.vibrate(50);
                     Uri uri = Uri.parse(uriOfImage);
                     Intent intent = new Intent(Intent.ACTION_SEND);
                     intent.setType("image/*");
                     intent.putExtra(Intent.EXTRA_TEXT, "");
                     intent.putExtra(Intent.EXTRA_STREAM, uri);
                     startActivity(Intent.createChooser(intent, "Share"));
-                    vibrator.vibrate(100);
                 }
             });
 
@@ -250,8 +254,8 @@ public class ShowDetailsActivity extends AppCompatActivity {
             deleteImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    vibrator.vibrate(50);
                     final int pos = position + 1;
-                    vibrator.vibrate(100);
                     final File imageToDelete = new File(uriOfImage);
                     if (imageToDelete.exists()) {
                         new MaterialStyledDialog
@@ -276,7 +280,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
                                             intent.putExtra("bucket", title);
                                             intent.putExtra("data", ShowDetailsActivity.imageModelArrayList);
                                             startActivity(intent);
-//                                            Toast.makeText(getActivity(), "Successfully Deleted", Toast.LENGTH_LONG).show();
+                                            Toast.makeText(getActivity(), "Successfully Deleted", Toast.LENGTH_LONG).show();
                                         } else {
                                             Toast.makeText(getActivity(), "Unsuccessful", Toast.LENGTH_LONG).show();
                                         }
@@ -301,15 +305,21 @@ public class ShowDetailsActivity extends AppCompatActivity {
             descriptionImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
-                    vibrator.vibrate(100);
+                    vibrator.vibrate(50);
                     if (areDetailsShown[0] == false) {
+
+                        if (moreLayoutIsVisible[0] == true) {
+                            rootOfMore.animate().translationY(rootOfMore.getTop()).setInterpolator(new AccelerateInterpolator()).start();
+                            moreLayoutIsVisible[0] = false;
+                            rootOfMore.setVisibility(View.GONE);
+                        }
                         rootOfDetails.setVisibility(View.VISIBLE);
                         rootOfDetails.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
                         areDetailsShown[0] = true;
                     } else {
                         rootOfDetails.animate().translationY(rootOfDetails.getTop()).setInterpolator(new AccelerateInterpolator()).start();
                         areDetailsShown[0] = false;
+                        rootOfDetails.setVisibility(View.GONE);
                     }
                 }
             });
@@ -317,9 +327,22 @@ public class ShowDetailsActivity extends AppCompatActivity {
             moreImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    vibrator.vibrate(100);
+                    vibrator.vibrate(50);
+                    if (moreLayoutIsVisible[0] == false) {
+                        if (areDetailsShown[0] == true) {
+                            rootOfDetails.animate().translationY(rootOfDetails.getTop()).setInterpolator(new AccelerateInterpolator()).start();
+                            areDetailsShown[0] = false;
+                            rootOfDetails.setVisibility(View.GONE);
 
-                    //TODO : add extra features
+                        }
+                        rootOfMore.setVisibility(View.VISIBLE);
+                        rootOfMore.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
+                        moreLayoutIsVisible[0] = true;
+                    } else {
+                        rootOfMore.animate().translationY(rootOfMore.getTop()).setInterpolator(new AccelerateInterpolator()).start();
+                        moreLayoutIsVisible[0] = false;
+                        rootOfMore.setVisibility(View.GONE);
+                    }
                 }
             });
 
@@ -331,7 +354,6 @@ public class ShowDetailsActivity extends AppCompatActivity {
 
             return view;
         }
-
 
     }
 
@@ -352,7 +374,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
                     imageModelArrayList.get(position).getTitle(),
                     imageModelArrayList.get(position).getUrl(),
                     imageModelArrayList.get(position).getDate());
-            Log.d("DATE",imageModelArrayList.get(position).getDate());
+            Log.d("DATE", imageModelArrayList.get(position).getDate());
             return fragment;
         }
 

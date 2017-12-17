@@ -14,7 +14,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -33,6 +32,7 @@ import java.util.Set;
 import me.kungfucat.gall.interfaces.OnItemClickListener;
 
 public class MainActivity extends AppCompatActivity {
+    //TODO: Remove the meta-data from manifest and re-enable the crash analytics
     RecyclerView recyclerView;
     FoldersAdapter foldersAdapter;
     private static final int REQUEST_PERMISSIONS_CODE = 100;
@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         contentHamburger = findViewById(R.id.content_hamburger);
         toolbar = findViewById(R.id.mainActivityToolBar);
         recyclerView = findViewById(R.id.foldersRecyclerView);
+
 
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         foldersAdapter = new FoldersAdapter(this, foldersModelArrayList);
@@ -147,10 +148,15 @@ public class MainActivity extends AppCompatActivity {
             do {
                 bucket = cur.getString(bucketColumn);
                 date = cur.getString(dateColumn);
+                String dateTime = "Unknown";
 
-                String format="dd-MM-yyyy HH:mm";
-                SimpleDateFormat dateFormat=new SimpleDateFormat(format, Locale.ENGLISH);
-                String dateTime=dateFormat.format(new Date(Long.parseLong(date)));
+                try {
+                    String format = "dd-MM-yyyy HH:mm";
+                    SimpleDateFormat dateFormat = new SimpleDateFormat(format, Locale.ENGLISH);
+                    dateTime = dateFormat.format(new Date(Long.parseLong(date)));
+                } catch (Exception e) {
+
+                }
 
                 bucket = bucket.substring(0, 1).toUpperCase() + bucket.substring(1).toLowerCase();
                 ImageModel imageModel = new ImageModel();
