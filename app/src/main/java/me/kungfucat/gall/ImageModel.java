@@ -10,6 +10,7 @@ import android.os.Parcelable;
 public class ImageModel implements Parcelable {
     String title;
     String url;
+    String date;
 
     public ImageModel() {
 
@@ -18,6 +19,7 @@ public class ImageModel implements Parcelable {
     public ImageModel(Parcel in) {
         this.title = in.readString();
         this.url = in.readString();
+        this.date = in.readString();
     }
 
     public static final Creator<ImageModel> CREATOR = new Creator<ImageModel>() {
@@ -48,6 +50,14 @@ public class ImageModel implements Parcelable {
         return url;
     }
 
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -57,5 +67,6 @@ public class ImageModel implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(title);
         parcel.writeString(url);
+        parcel.writeString(date);
     }
 }

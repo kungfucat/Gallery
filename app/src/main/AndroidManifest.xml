@@ -28,11 +28,6 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity android:name=".SingleFolderActivity" />
 
-        <activity
-            android:name=".DescriptionOfPhotoActivity"
-            android:label="@string/title_activity_description_of_photo"
-            android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"/>
-
     </application>
 
 </manifest>

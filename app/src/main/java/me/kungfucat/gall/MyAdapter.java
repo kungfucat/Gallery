@@ -40,7 +40,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
 
         GlideApp.with(context)
-                .load(data.get(position).url)
+                .load(data.get(position).getUrl())
                 .override(200, 200)
                 .thumbnail(0.5f)
                 .placeholder(new ColorDrawable(Color.BLACK))

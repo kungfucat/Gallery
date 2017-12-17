@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Explode;
 import android.transition.Transition;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 

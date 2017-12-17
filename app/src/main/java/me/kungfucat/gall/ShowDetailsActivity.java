@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -15,12 +16,15 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -41,7 +45,10 @@ import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.github.javiersantos.materialstyleddialogs.enums.Style;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Random;
 
 public class ShowDetailsActivity extends AppCompatActivity {
@@ -130,13 +137,14 @@ public class ShowDetailsActivity extends AppCompatActivity {
     public static class ImageFragment extends Fragment {
         public static ArrayList<ImageModel> models = new ArrayList<>();
 
-        public static ImageFragment newInstance(int position, String title, String url) {
+        public static ImageFragment newInstance(int position, String title, String url, String date) {
             ImageFragment fragment = new ImageFragment();
 
             Bundle args = new Bundle();
             args.putInt("position", position);
             args.putString("title", title);
             args.putString("url", url);
+            args.putString("date",date);
             fragment.setArguments(args);
 
             return fragment;
@@ -152,6 +160,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
             final int position = bundle.getInt("position");
             final String uriOfImage = bundle.getString("url");
             final String title = bundle.getString("title");
+            String dateTaken=bundle.getString("date");
 
 
             final Toolbar imageToolbar = view.findViewById(R.id.imageToolbar);
@@ -161,7 +170,6 @@ public class ShowDetailsActivity extends AppCompatActivity {
             ImageView shareImageView = view.findViewById(R.id.shareIcon);
             ImageView moreImageView = view.findViewById(R.id.moreIcon);
             ImageView descriptionImageView = view.findViewById(R.id.descriptionIcon);
-
             imageToolbar.setTitleTextColor(Color.WHITE);
             //remove 0 indexing for the user
             int positionToShow = position + 1;
@@ -169,6 +177,37 @@ public class ShowDetailsActivity extends AppCompatActivity {
             imageToolbar.setTitle(bucket + " " + positionToShow);
             final boolean[] hidden = {true};
             final Vibrator vibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+
+            final LinearLayout rootOfDetails = view.findViewById(R.id.rootOfDetails);
+            final boolean[] areDetailsShown = {false};
+            TextView textView1 = view.findViewById(R.id.textView1);
+            TextView textView2 = view.findViewById(R.id.textView2);
+            TextView textView3 = view.findViewById(R.id.textView3);
+            TextView textView4 = view.findViewById(R.id.textView4);
+
+            File file = new File(uriOfImage);
+            Uri uri = Uri.parse(uriOfImage);
+            String textView1String = "Name : " + uri.getLastPathSegment();
+            String textView2String = "Path : " + uri;
+
+            textView1.setText(textView1String);
+            textView2.setText(textView2String);
+
+            String dateToShow="Date & Time : "+ dateTaken;
+            textView3.setText(dateToShow);
+
+            long length = file.length();
+            length /= 1024;
+            String textView4String;
+            long mbLength = length / 1024;
+            if (mbLength != 0) {
+                length /= 1024;
+                textView4String = "Size : " + mbLength + " MB and " + length + " KB";
+            } else {
+                textView4String = "Size : " + length + " KB";
+            }
+
+            textView4.setText(textView4String);
 
             photoView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -184,6 +223,8 @@ public class ShowDetailsActivity extends AppCompatActivity {
                     } else {
                         //no need to hide it immediately
 //                        imageToolbar.setVisibility(View.GONE);
+                        areDetailsShown[0] = false;
+                        rootOfDetails.animate().translationY(rootOfDetails.getTop()).setInterpolator(new AccelerateInterpolator()).start();
                         bottomNavigationBar.animate().translationY(bottomNavigationBar.getTop()).setInterpolator(new AccelerateInterpolator()).start();
                         imageToolbar.animate().translationY(-imageToolbar.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
 
@@ -218,10 +259,11 @@ public class ShowDetailsActivity extends AppCompatActivity {
                                 .setTitle("Delete")
                                 .setStyle(Style.HEADER_WITH_TITLE)
                                 .setHeaderColor(R.color.black)
-                                .setDescription("Are you sure to delete this image?")
+                                .setDescription("Are you sure you want to delete this image?")
                                 .withDarkerOverlay(true)
                                 .setCancelable(true)
                                 .setPositiveText("Yes")
+                                .withDivider(true)
                                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                                     @Override
                                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
@@ -229,9 +271,9 @@ public class ShowDetailsActivity extends AppCompatActivity {
                                         if (imageToDelete.delete()) {
 
                                             getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(uriOfImage))));
-                                            ShowDetailsActivity.imageModelArrayList.remove(pos-1);
-                                            Intent intent=new Intent(getActivity(),SingleFolderActivity.class);
-                                            intent.putExtra("bucket",title);
+                                            ShowDetailsActivity.imageModelArrayList.remove(pos - 1);
+                                            Intent intent = new Intent(getActivity(), SingleFolderActivity.class);
+                                            intent.putExtra("bucket", title);
                                             intent.putExtra("data", ShowDetailsActivity.imageModelArrayList);
                                             startActivity(intent);
 //                                            Toast.makeText(getActivity(), "Successfully Deleted", Toast.LENGTH_LONG).show();
@@ -259,9 +301,16 @@ public class ShowDetailsActivity extends AppCompatActivity {
             descriptionImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
                     vibrator.vibrate(100);
-                    Intent intent = new Intent(getActivity(), DescriptionOfPhotoActivity.class);
-                    startActivity(intent);
+                    if (areDetailsShown[0] == false) {
+                        rootOfDetails.setVisibility(View.VISIBLE);
+                        rootOfDetails.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
+                        areDetailsShown[0] = true;
+                    } else {
+                        rootOfDetails.animate().translationY(rootOfDetails.getTop()).setInterpolator(new AccelerateInterpolator()).start();
+                        areDetailsShown[0] = false;
+                    }
                 }
             });
 
@@ -269,6 +318,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     vibrator.vibrate(100);
+
                     //TODO : add extra features
                 }
             });
@@ -281,6 +331,8 @@ public class ShowDetailsActivity extends AppCompatActivity {
 
             return view;
         }
+
+
     }
 
     class MyAdapter extends FragmentPagerAdapter {
@@ -298,7 +350,9 @@ public class ShowDetailsActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             ImageFragment fragment = ImageFragment.newInstance(position,
                     imageModelArrayList.get(position).getTitle(),
-                    imageModelArrayList.get(position).getUrl());
+                    imageModelArrayList.get(position).getUrl(),
+                    imageModelArrayList.get(position).getDate());
+            Log.d("DATE",imageModelArrayList.get(position).getDate());
             return fragment;
         }
 

@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -21,8 +22,11 @@ import android.widget.Toast;
 
 import com.yalantis.guillotine.animation.GuillotineAnimation;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -133,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         if (cur.moveToFirst()) {
             String bucket;
             String date;
-            int columnIndex = cur.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            int columnIndex = cur.getColumnIndex(MediaStore.Images.Media.DATA);
             int bucketColumn = cur.getColumnIndex(
                     MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
 
@@ -144,10 +148,15 @@ public class MainActivity extends AppCompatActivity {
                 bucket = cur.getString(bucketColumn);
                 date = cur.getString(dateColumn);
 
+                String format="dd-MM-yyyy HH:mm";
+                SimpleDateFormat dateFormat=new SimpleDateFormat(format, Locale.ENGLISH);
+                String dateTime=dateFormat.format(new Date(Long.parseLong(date)));
+
                 bucket = bucket.substring(0, 1).toUpperCase() + bucket.substring(1).toLowerCase();
                 ImageModel imageModel = new ImageModel();
                 imageModel.setTitle(bucket);
                 imageModel.setUrl(cur.getString(columnIndex));
+                imageModel.setDate(dateTime);
                 imageModelsList.add(imageModel);
 
                 if (!map.containsKey(bucket)) {
