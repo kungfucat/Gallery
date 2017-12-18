@@ -1,11 +1,15 @@
 package me.kungfucat.gall;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -44,6 +48,7 @@ import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.github.javiersantos.materialstyleddialogs.enums.Style;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -164,14 +169,14 @@ public class ShowDetailsActivity extends AppCompatActivity {
 
             ImageView deleteImageView = view.findViewById(R.id.deleteIcon);
             ImageView shareImageView = view.findViewById(R.id.shareIcon);
-            ImageView moreImageView = view.findViewById(R.id.moreIcon);
+            final ImageView moreImageView = view.findViewById(R.id.moreIcon);
             ImageView descriptionImageView = view.findViewById(R.id.descriptionIcon);
             imageToolbar.setTitleTextColor(Color.WHITE);
 
             //remove 0 indexing for the user
             int positionToShow = position + 1;
             String bucket = bundle.getString("title");
-            imageToolbar.setTitle(bucket + " " + positionToShow);
+            imageToolbar.setTitle(bucket + " " + positionToShow + "/" + imageModelArrayList.size());
             final boolean[] hidden = {true};
             final Vibrator vibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
 
@@ -187,7 +192,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
             TextView textView4 = view.findViewById(R.id.textView4);
 
             File file = new File(uriOfImage);
-            Uri uri = Uri.parse(uriOfImage);
+            final Uri uri = Uri.parse(uriOfImage);
             String textView1String = "Name : " + uri.getLastPathSegment();
             String textView2String = "Path : " + uri;
 
@@ -230,6 +235,9 @@ public class ShowDetailsActivity extends AppCompatActivity {
                         imageToolbar.animate().translationY(-imageToolbar.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
                         rootOfMore.animate().translationY(rootOfMore.getTop()).setInterpolator(new AccelerateInterpolator()).start();
 
+                        //GONE to escape confusion in landscape mode
+                        rootOfDetails.setVisibility(View.GONE);
+                        rootOfMore.setVisibility(View.GONE);
                         moreLayoutIsVisible[0] = false;
                         areDetailsShown[0] = false;
                         hidden[0] = true;
@@ -333,7 +341,6 @@ public class ShowDetailsActivity extends AppCompatActivity {
                             rootOfDetails.animate().translationY(rootOfDetails.getTop()).setInterpolator(new AccelerateInterpolator()).start();
                             areDetailsShown[0] = false;
                             rootOfDetails.setVisibility(View.GONE);
-
                         }
                         rootOfMore.setVisibility(View.VISIBLE);
                         rootOfMore.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
@@ -346,6 +353,53 @@ public class ShowDetailsActivity extends AppCompatActivity {
                 }
             });
 
+//MORE OPTIONS ON CLICK LISTENERS
+            TextView setAsWallpaper = view.findViewById(R.id.setAsWallpaper);
+            TextView setAsImage = view.findViewById(R.id.setAsImage);
+            TextView renameImage = view.findViewById(R.id.renameImage);
+            TextView cropImage = view.findViewById(R.id.cropImage);
+
+            setAsWallpaper.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+            });
+
+            setAsImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
+                    intent.addCategory(Intent.CATEGORY_DEFAULT);
+                    //can't use normal URI, because original uri misses the 'file://' prefix
+                    intent.setDataAndType(Uri.fromFile(new File(uriOfImage)), "image/*");
+                    intent.putExtra("mimeType", "image/*");
+                    getActivity().startActivity(Intent.createChooser(intent, "Set Image"));
+                }
+            });
+
+            cropImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    try {
+                        Intent cropIntent = new Intent("com.android.camera.action.CROP");
+
+                        cropIntent.setDataAndType(Uri.fromFile(new File(uriOfImage)), "image/*");
+                        cropIntent.putExtra("crop", "true");
+                        cropIntent.putExtra("aspectX", 1);
+                        cropIntent.putExtra("aspectY", 1);
+                        cropIntent.putExtra("outputX", 128);
+                        cropIntent.putExtra("outputY", 128);
+                        cropIntent.putExtra("return-data", true);
+                        getActivity().startActivityForResult(cropIntent, 1);
+                    }
+                    // respond to users whose devices do not support the crop action
+                    catch (Exception e) {
+                        // display an error message
+                        Log.d("UNSUCCESS", String.valueOf(e));
+                    }
+                }
+            });
             GlideApp.with(getActivity())
                     .load(uriOfImage)
                     .thumbnail(0.5f)
@@ -355,6 +409,53 @@ public class ShowDetailsActivity extends AppCompatActivity {
             return view;
         }
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("UNSUCCESS","In onActivityResult" + " : "+requestCode+" : " + resultCode+" "+Activity.RESULT_OK);
+        if (requestCode == 1 && resultCode== Activity.RESULT_OK) {
+            if (data != null) {
+                Bundle extras = data.getExtras();
+                Bitmap bitmap = extras.getParcelable("data");
+                //TODO: save bitmap in memory
+                File filepath = Environment.getExternalStorageDirectory();
+
+                // Create a new folder in SD Card
+                File dir = new File(filepath + "/Gall/");
+                dir.mkdir();
+
+                // Create a name for the saved image
+                String nameOfImage = "Gall_Cropped" + System.currentTimeMillis() + ".jpg";
+                File file = new File(dir, nameOfImage);
+                Log.d("UNSUCCESS", file.getPath());
+                FileOutputStream output=null;
+                try {
+                    output = new FileOutputStream(file);
+                    // Compress into image of png format
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        bitmap.setConfig(Bitmap.Config.ARGB_8888);
+                    }
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
+                    output.flush();
+                    output.close();
+                    Toast.makeText(getApplicationContext(), "Image Saved", Toast.LENGTH_SHORT).show();
+                    sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
+                    sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://"+ Environment.getExternalStorageDirectory())));
+                } catch (Exception e) {
+                    Log.d("UNSUCCESS", String.valueOf(e));
+                }
+
+            }
+            else {
+                Log.d("UNSUCCESS","Data is null");
+            }
+
+        }
+        else {
+            Log.d("UNSUCCESS","NONE MATCHED");
+        }
     }
 
     class MyAdapter extends FragmentPagerAdapter {

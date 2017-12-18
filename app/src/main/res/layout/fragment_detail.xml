@@ -158,7 +158,6 @@
                 android:id="@+id/shareIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
                 android:layout_weight="1"
                 android:src="@drawable/ic_share" />
 
@@ -166,7 +165,6 @@
                 android:id="@+id/deleteIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
                 android:layout_weight="1"
                 android:src="@drawable/ic_delete" />
 
@@ -174,7 +172,6 @@
                 android:id="@+id/descriptionIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
                 android:layout_weight="1"
                 android:src="@drawable/ic_description" />
 
@@ -182,7 +179,7 @@
                 android:id="@+id/moreIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+                android:layout_weight="1"
                 android:src="@drawable/ic_more" />
 
         </LinearLayout>
