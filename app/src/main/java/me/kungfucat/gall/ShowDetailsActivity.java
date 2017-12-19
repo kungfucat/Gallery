@@ -53,7 +53,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class ShowDetailsActivity extends AppCompatActivity {
-    ViewPager viewPager;
+    public static ViewPager viewPager;
     public static ArrayList<ImageModel> imageModelArrayList = null;
     public static int currentPosition;
 
@@ -169,16 +169,44 @@ public class ShowDetailsActivity extends AppCompatActivity {
 
             ImageView deleteImageView = view.findViewById(R.id.deleteIcon);
             ImageView shareImageView = view.findViewById(R.id.shareIcon);
+            ImageView backArrowBottomImageView=view.findViewById(R.id.backArrowBottomBar);
             final ImageView moreImageView = view.findViewById(R.id.moreIcon);
             ImageView descriptionImageView = view.findViewById(R.id.descriptionIcon);
-            imageToolbar.setTitleTextColor(Color.WHITE);
 
             //remove 0 indexing for the user
             int positionToShow = position + 1;
             String bucket = bundle.getString("title");
-            imageToolbar.setTitle(bucket + " " + positionToShow + "/" + imageModelArrayList.size());
-            final boolean[] hidden = {true};
+            TextView imageToolbarTitle = view.findViewById(R.id.imageToolbarTitle);
+            ImageView imageToolbarBackArow = view.findViewById(R.id.imageToolbarBackArrow);
+
             final Vibrator vibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+
+            backArrowBottomImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    vibrator.vibrate(50);
+                    Intent intent = new Intent(getActivity(), SingleFolderActivity.class);
+                    intent.putExtra("bucket", title);
+                    intent.putExtra("data", ShowDetailsActivity.imageModelArrayList);
+                    startActivity(intent);
+                }
+            });
+
+            imageToolbarBackArow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    vibrator.vibrate(50);
+                    Intent intent = new Intent(getActivity(), SingleFolderActivity.class);
+                    intent.putExtra("bucket", title);
+                    intent.putExtra("data", ShowDetailsActivity.imageModelArrayList);
+                    startActivity(intent);
+                }
+            });
+
+            String stringToShow = bucket + " " + positionToShow + "/" + imageModelArrayList.size();
+            imageToolbarTitle.setText(stringToShow);
+
+            final boolean[] hidden = {true};
 
             final LinearLayout rootOfDetails = view.findViewById(R.id.rootOfDetails);
             final boolean[] areDetailsShown = {false};
@@ -249,6 +277,16 @@ public class ShowDetailsActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     vibrator.vibrate(50);
+
+                    rootOfDetails.animate().translationY(rootOfDetails.getTop()).setInterpolator(new AccelerateInterpolator()).start();
+                    rootOfMore.animate().translationY(rootOfMore.getTop()).setInterpolator(new AccelerateInterpolator()).start();
+
+                    //GONE to escape confusion in landscape mode
+                    rootOfDetails.setVisibility(View.GONE);
+                    rootOfMore.setVisibility(View.GONE);
+                    moreLayoutIsVisible[0] = false;
+                    areDetailsShown[0] = false;
+
                     Uri uri = Uri.parse(uriOfImage);
                     Intent intent = new Intent(Intent.ACTION_SEND);
                     intent.setType("image/*");
@@ -263,6 +301,16 @@ public class ShowDetailsActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     vibrator.vibrate(50);
+
+                    rootOfDetails.animate().translationY(rootOfDetails.getTop()).setInterpolator(new AccelerateInterpolator()).start();
+                    rootOfMore.animate().translationY(rootOfMore.getTop()).setInterpolator(new AccelerateInterpolator()).start();
+
+                    //GONE to escape confusion in landscape mode
+                    rootOfDetails.setVisibility(View.GONE);
+                    rootOfMore.setVisibility(View.GONE);
+                    moreLayoutIsVisible[0] = false;
+                    areDetailsShown[0] = false;
+
                     final int pos = position + 1;
                     final File imageToDelete = new File(uriOfImage);
                     if (imageToDelete.exists()) {
@@ -281,7 +329,6 @@ public class ShowDetailsActivity extends AppCompatActivity {
                                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
 
                                         if (imageToDelete.delete()) {
-
                                             getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(uriOfImage))));
                                             ShowDetailsActivity.imageModelArrayList.remove(pos - 1);
                                             Intent intent = new Intent(getActivity(), SingleFolderActivity.class);
@@ -354,21 +401,36 @@ public class ShowDetailsActivity extends AppCompatActivity {
             });
 
 //MORE OPTIONS ON CLICK LISTENERS
-            TextView setAsWallpaper = view.findViewById(R.id.setAsWallpaper);
+            TextView detailsOfImage = view.findViewById(R.id.detailsOfImageInMore);
             TextView setAsImage = view.findViewById(R.id.setAsImage);
-            TextView renameImage = view.findViewById(R.id.renameImage);
             TextView cropImage = view.findViewById(R.id.cropImage);
 
-            setAsWallpaper.setOnClickListener(new View.OnClickListener() {
+            detailsOfImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    vibrator.vibrate(50);
+                    if (areDetailsShown[0] == false) {
 
+                        if (moreLayoutIsVisible[0] == true) {
+                            rootOfMore.animate().translationY(rootOfMore.getTop()).setInterpolator(new AccelerateInterpolator()).start();
+                            moreLayoutIsVisible[0] = false;
+                            rootOfMore.setVisibility(View.GONE);
+                        }
+                        rootOfDetails.setVisibility(View.VISIBLE);
+                        rootOfDetails.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
+                        areDetailsShown[0] = true;
+                    } else {
+                        rootOfDetails.animate().translationY(rootOfDetails.getTop()).setInterpolator(new AccelerateInterpolator()).start();
+                        areDetailsShown[0] = false;
+                        rootOfDetails.setVisibility(View.GONE);
+                    }
                 }
             });
 
             setAsImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    vibrator.vibrate(50);
                     Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
                     intent.addCategory(Intent.CATEGORY_DEFAULT);
                     //can't use normal URI, because original uri misses the 'file://' prefix
@@ -382,8 +444,8 @@ public class ShowDetailsActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     try {
+                        vibrator.vibrate(50);
                         Intent cropIntent = new Intent("com.android.camera.action.CROP");
-
                         cropIntent.setDataAndType(Uri.fromFile(new File(uriOfImage)), "image/*");
                         cropIntent.putExtra("crop", "true");
                         cropIntent.putExtra("aspectX", 1);
@@ -392,6 +454,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
                         cropIntent.putExtra("outputY", 128);
                         cropIntent.putExtra("return-data", true);
                         getActivity().startActivityForResult(cropIntent, 1);
+
                     }
                     // respond to users whose devices do not support the crop action
                     catch (Exception e) {
@@ -400,6 +463,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
                     }
                 }
             });
+
             GlideApp.with(getActivity())
                     .load(uriOfImage)
                     .thumbnail(0.5f)
@@ -411,15 +475,16 @@ public class ShowDetailsActivity extends AppCompatActivity {
 
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d("UNSUCCESS","In onActivityResult" + " : "+requestCode+" : " + resultCode+" "+Activity.RESULT_OK);
-        if (requestCode == 1 && resultCode== Activity.RESULT_OK) {
+        Log.d("UNSUCCESS", "In onActivityResult" + " : " + requestCode + " : " + resultCode + " " + Activity.RESULT_OK);
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
             if (data != null) {
+                //Saved the bitmap to the image
                 Bundle extras = data.getExtras();
                 Bitmap bitmap = extras.getParcelable("data");
-                //TODO: save bitmap in memory
                 File filepath = Environment.getExternalStorageDirectory();
 
                 // Create a new folder in SD Card
@@ -429,11 +494,10 @@ public class ShowDetailsActivity extends AppCompatActivity {
                 // Create a name for the saved image
                 String nameOfImage = "Gall_Cropped" + System.currentTimeMillis() + ".jpg";
                 File file = new File(dir, nameOfImage);
-                Log.d("UNSUCCESS", file.getPath());
-                FileOutputStream output=null;
+                FileOutputStream output = null;
                 try {
                     output = new FileOutputStream(file);
-                    // Compress into image of png format
+
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                         bitmap.setConfig(Bitmap.Config.ARGB_8888);
                     }
@@ -442,19 +506,17 @@ public class ShowDetailsActivity extends AppCompatActivity {
                     output.close();
                     Toast.makeText(getApplicationContext(), "Image Saved", Toast.LENGTH_SHORT).show();
                     sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
-                    sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://"+ Environment.getExternalStorageDirectory())));
+                    sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
                 } catch (Exception e) {
                     Log.d("UNSUCCESS", String.valueOf(e));
                 }
 
-            }
-            else {
-                Log.d("UNSUCCESS","Data is null");
+            } else {
+                Log.d("UNSUCCESS", "Data is null");
             }
 
-        }
-        else {
-            Log.d("UNSUCCESS","NONE MATCHED");
+        } else {
+            Log.d("UNSUCCESS", "NONE MATCHED");
         }
     }
 
