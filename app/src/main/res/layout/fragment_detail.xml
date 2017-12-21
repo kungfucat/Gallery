@@ -115,6 +115,8 @@
         android:layout_gravity="bottom"
         android:layout_marginBottom="?android:attr/actionBarSize"
         android:background="#66000000"
+        android:keepScreenOn="true"
+        android:scrollbars="vertical"
         android:elevation="1dp"
         android:orientation="vertical"
         android:visibility="gone">
@@ -123,10 +125,21 @@
             android:id="@+id/setAsImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
+            android:layout_margin="3dp"
             android:gravity="center"
-            android:padding="7dp"
+            android:padding="5dp"
             android:text="Set Image As"
+            android:textColor="#ffffff"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/editImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="Edit Image"
             android:textColor="#ffffff"
             android:textSize="18sp" />
 
@@ -134,9 +147,9 @@
             android:id="@+id/cropImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
+            android:layout_margin="3dp"
             android:gravity="center"
-            android:padding="7dp"
+            android:padding="5dp"
             android:text="Crop"
             android:textColor="#ffffff"
             android:textSize="18sp" />
@@ -145,9 +158,9 @@
             android:id="@+id/detailsOfImageInMore"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
+            android:layout_margin="3dp"
             android:gravity="center"
-            android:padding="7dp"
+            android:padding="5dp"
             android:text="Details"
             android:textColor="#ffffff"
             android:textSize="18sp" />

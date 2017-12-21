@@ -1,13 +1,10 @@
 package me.kungfucat.gall;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Vibrator;
@@ -46,8 +43,13 @@ import com.eftimoff.viewpagertransformers.ZoomOutSlideTransformer;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.github.javiersantos.materialstyleddialogs.enums.Style;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
@@ -80,10 +82,6 @@ public class ShowDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-//                Log.d("TAG", position + "");
-//                View view = viewPager.getFocusedChild();
-//                Toolbar toolbar = view.findViewById(R.id.imageToolbar);
-
                 currentPosition = position;
             }
 
@@ -169,7 +167,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
 
             ImageView deleteImageView = view.findViewById(R.id.deleteIcon);
             ImageView shareImageView = view.findViewById(R.id.shareIcon);
-            ImageView backArrowBottomImageView=view.findViewById(R.id.backArrowBottomBar);
+            ImageView backArrowBottomImageView = view.findViewById(R.id.backArrowBottomBar);
             final ImageView moreImageView = view.findViewById(R.id.moreIcon);
             ImageView descriptionImageView = view.findViewById(R.id.descriptionIcon);
 
@@ -199,7 +197,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
                     Intent intent = new Intent(getActivity(), SingleFolderActivity.class);
                     intent.putExtra("bucket", title);
                     intent.putExtra("data", ShowDetailsActivity.imageModelArrayList);
-                    startActivity(intent);
+                    getActivity().startActivity(intent);
                 }
             });
 
@@ -404,6 +402,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
             TextView detailsOfImage = view.findViewById(R.id.detailsOfImageInMore);
             TextView setAsImage = view.findViewById(R.id.setAsImage);
             TextView cropImage = view.findViewById(R.id.cropImage);
+            TextView editImage = view.findViewById(R.id.editImage);
 
             detailsOfImage.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -445,21 +444,34 @@ public class ShowDetailsActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     try {
                         vibrator.vibrate(50);
-                        Intent cropIntent = new Intent("com.android.camera.action.CROP");
-                        cropIntent.setDataAndType(Uri.fromFile(new File(uriOfImage)), "image/*");
-                        cropIntent.putExtra("crop", "true");
-                        cropIntent.putExtra("aspectX", 1);
-                        cropIntent.putExtra("aspectY", 1);
-                        cropIntent.putExtra("outputX", 128);
-                        cropIntent.putExtra("outputY", 128);
-                        cropIntent.putExtra("return-data", true);
-                        getActivity().startActivityForResult(cropIntent, 1);
+                        CropImage.activity(Uri.fromFile(new File(uriOfImage)))
+                                .setGuidelines(CropImageView.Guidelines.ON)
+                                .start(getActivity());
 
                     }
                     // respond to users whose devices do not support the crop action
                     catch (Exception e) {
                         // display an error message
                         Log.d("UNSUCCESS", String.valueOf(e));
+                    }
+                }
+            });
+
+            editImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    vibrator.vibrate(50);
+                    Intent editIntent = new Intent(Intent.ACTION_EDIT);
+                    editIntent.setDataAndType(Uri.fromFile(new File(uriOfImage)), "image/*");
+                    editIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    try {
+                        getActivity().startActivity(editIntent);
+                    } catch (Exception e) {
+                        try {
+                            getActivity().startActivity(Intent.createChooser(editIntent, "Edit"));
+                        } catch (Exception e2) {
+                            Toast.makeText(getActivity(), "Unsuccessful", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
             });
@@ -479,44 +491,48 @@ public class ShowDetailsActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d("UNSUCCESS", "In onActivityResult" + " : " + requestCode + " : " + resultCode + " " + Activity.RESULT_OK);
-        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            if (data != null) {
-                //Saved the bitmap to the image
-                Bundle extras = data.getExtras();
-                Bitmap bitmap = extras.getParcelable("data");
-                File filepath = Environment.getExternalStorageDirectory();
 
-                // Create a new folder in SD Card
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                Uri resultUri = result.getUri();
+                Log.d("RESULTURI", String.valueOf(data.getExtras()));
+
+                File filepath = Environment.getExternalStorageDirectory();
                 File dir = new File(filepath + "/Gall/");
                 dir.mkdir();
 
                 // Create a name for the saved image
                 String nameOfImage = "Gall_Cropped" + System.currentTimeMillis() + ".jpg";
-                File file = new File(dir, nameOfImage);
-                FileOutputStream output = null;
+                File destinationFileName = new File(dir, nameOfImage);
+                String sourceFileName = result.getUri().getPath();
+                BufferedInputStream bis = null;
+                BufferedOutputStream bos = null;
                 try {
-                    output = new FileOutputStream(file);
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                        bitmap.setConfig(Bitmap.Config.ARGB_8888);
-                    }
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
-                    output.flush();
-                    output.close();
-                    Toast.makeText(getApplicationContext(), "Image Saved", Toast.LENGTH_SHORT).show();
-                    sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
-                    sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
+                    bis = new BufferedInputStream(new FileInputStream(sourceFileName));
+                    bos = new BufferedOutputStream(new FileOutputStream(destinationFileName, false));
+                    byte[] buf = new byte[1024];
+                    bis.read(buf);
+                    do {
+                        bos.write(buf);
+                    } while (bis.read(buf) != -1);
                 } catch (Exception e) {
-                    Log.d("UNSUCCESS", String.valueOf(e));
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        if (bis != null) bis.close();
+                        if (bos != null) bos.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
 
-            } else {
-                Log.d("UNSUCCESS", "Data is null");
+                Toast.makeText(getApplicationContext(), "Image Saved", Toast.LENGTH_SHORT).show();
+                sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(destinationFileName)));
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+                Log.d("UNSUCCESS", String.valueOf(error));
             }
-
-        } else {
-            Log.d("UNSUCCESS", "NONE MATCHED");
         }
     }
 

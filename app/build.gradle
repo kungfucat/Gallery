@@ -48,12 +48,12 @@ dependencies {
     //firebase core
     compile 'com.google.firebase:firebase-core:11.6.2'
 
-    compile 'com.github.ganfra:material-spinner:2.0.0'
-
     //for zoomable imageview
     compile 'com.github.chrisbanes:PhotoView:2.0.0'
 
     compile 'com.github.javiersantos:MaterialStyledDialogs:2.1'
+
+    compile 'com.theartofdev.edmodo:android-image-cropper:2.6.+'
 
     compile 'com.google.firebase:firebase-crash:11.6.2'
 

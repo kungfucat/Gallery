@@ -1,13 +1,11 @@
 package me.kungfucat.gall;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -58,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.mainActivityToolBar);
         recyclerView = findViewById(R.id.foldersRecyclerView);
 
+
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         foldersAdapter = new FoldersAdapter(this, foldersModelArrayList);
         recyclerView.setAdapter(foldersAdapter);
@@ -98,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                         REQUEST_PERMISSIONS_CODE);
             }
         } else {
-            loadImages();
+           loadImages();
         }
     }
 
@@ -188,36 +187,44 @@ public class MainActivity extends AppCompatActivity {
 
             Set<Map.Entry<String, ArrayList<ImageModel>>> st = map.entrySet();
 
-            HashMap<String, ArrayList<ImageModel>> newMap = new HashMap<>();
-            Log.d("MAPSIZE", String.valueOf(map.size()));
+
             for (Map.Entry<String, ArrayList<ImageModel>> me : st) {
-                if (me.getValue().size() < 5) {
-                    if (newMap.containsKey("Others")) {
-
-                        ArrayList<ImageModel> temp = newMap.get("Others");
-
-                        for (int i = 0; i < me.getValue().size(); i++) {
-                            temp.add(me.getValue().get(i));
-                        }
-
-                        newMap.put("Others", temp);
-                    } else {
-                        newMap.put("Others", me.getValue());
-                    }
-                } else {
-
-                    newMap.put(me.getKey(), me.getValue());
-                }
-            }
-
-            Set<Map.Entry<String, ArrayList<ImageModel>>> newSet = newMap.entrySet();
-
-            for (Map.Entry<String, ArrayList<ImageModel>> me : newSet) {
                 FoldersModel foldersModel = new FoldersModel();
                 foldersModel.setFoldersName(me.getKey());
                 foldersModel.setImageModelsList(me.getValue());
                 foldersModelArrayList.add(foldersModel);
             }
+
+//            HashMap<String, ArrayList<ImageModel>> newMap = new HashMap<>();
+//            Log.d("MAPSIZE", String.valueOf(map.size()));
+//            for (Map.Entry<String, ArrayList<ImageModel>> me : st) {
+//                if (me.getValue().size() < 5) {
+//                    if (newMap.containsKey("Others")) {
+//
+//                        ArrayList<ImageModel> temp = newMap.get("Others");
+//
+//                        for (int i = 0; i < me.getValue().size(); i++) {
+//                            temp.add(me.getValue().get(i));
+//                        }
+//
+//                        newMap.put("Others", temp);
+//                    } else {
+//                        newMap.put("Others", me.getValue());
+//                    }
+//                } else {
+//
+//                    newMap.put(me.getKey(), me.getValue());
+//                }
+//            }
+//
+//            Set<Map.Entry<String, ArrayList<ImageModel>>> newSet = newMap.entrySet();
+//
+//            for (Map.Entry<String, ArrayList<ImageModel>> me : newSet) {
+//                FoldersModel foldersModel = new FoldersModel();
+//                foldersModel.setFoldersName(me.getKey());
+//                foldersModel.setImageModelsList(me.getValue());
+//                foldersModelArrayList.add(foldersModel);
+//            }
         }
     }
 }
