@@ -20,9 +20,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity android:name=".MainActivity">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -30,10 +30,11 @@
         <activity
             android:name=".ShowDetailsActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
         <activity android:name=".SingleFolderActivity" />
 
         <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat"/> <!-- optional (needed if default theme has no action bar) -->
+            android:theme="@style/Base.Theme.AppCompat"/>
     </application>
 
 </manifest>

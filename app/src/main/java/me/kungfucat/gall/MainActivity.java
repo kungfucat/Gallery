@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.yalantis.guillotine.animation.GuillotineAnimation;
 
 import java.io.File;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -164,7 +165,8 @@ public class MainActivity extends AppCompatActivity {
 
                 bucket = bucket.substring(0, 1).toUpperCase() + bucket.substring(1).toLowerCase();
                 File file = new File(uriObtained);
-                if (file.exists()) {
+                String mimeType= URLConnection.guessContentTypeFromName(cur.getString(columnIndex));
+                if (file.exists() && mimeType!=null && mimeType.startsWith("image")) {
                     ImageModel imageModel = new ImageModel();
                     imageModel.setTitle(bucket);
                     imageModel.setUrl(cur.getString(columnIndex));

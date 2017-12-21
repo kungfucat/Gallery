@@ -496,10 +496,9 @@ public class ShowDetailsActivity extends AppCompatActivity {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
                 Uri resultUri = result.getUri();
-                Log.d("RESULTURI", String.valueOf(data.getExtras()));
 
                 File filepath = Environment.getExternalStorageDirectory();
-                File dir = new File(filepath + "/Gall/");
+                File dir = new File(filepath + "/Cropped Pictures/");
                 dir.mkdir();
 
                 // Create a name for the saved image
