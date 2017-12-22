@@ -27,40 +27,46 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
-    compile 'com.android.support:recyclerview-v7:+'
-    compile 'com.android.support:cardview-v7:+'
+    compile 'com.android.support:recyclerview-v7:27.0.2'
+    compile 'com.android.support:cardview-v7:27.0.2'
 
-//    for glide
+    //for glide
     implementation 'com.github.bumptech.glide:glide:4.4.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.4.0'
 
-// for using coordinator layout
+    //for using coordinator layout
     compile 'com.android.support:design:27.0.2'
 
-//for showing pager transformer
+    //for showing pager transformer
     compile 'com.eftimoff:android-viewpager-transformers:1.0.1@aar'
 
-// Recycler view animations
+    //Recycler view animations
     compile 'jp.wasabeef:recyclerview-animators:2.2.7'
-//Guillotine style menu
+
+    //Guillotine style menu
     compile 'com.github.Yalantis:GuillotineMenu-Android:1.2'
 
     //firebase core
     compile 'com.google.firebase:firebase-core:11.6.2'
 
     //for zoomable imageview
-    compile 'com.github.chrisbanes:PhotoView:2.0.0'
+    compile 'com.github.chrisbanes:PhotoView:2.1.3'
 
+    //color picker
+    compile 'petrov.kristiyan:colorpicker-library:1.1.8'
+
+    //material styled dialogs
     compile 'com.github.javiersantos:MaterialStyledDialogs:2.1'
 
-    compile 'com.theartofdev.edmodo:android-image-cropper:2.6.+'
+    //image cropping library
+    compile 'com.theartofdev.edmodo:android-image-cropper:2.6.0'
 
     compile 'com.google.firebase:firebase-crash:11.6.2'
 
     compile('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
         transitive = true
     }
+    compile 'petrov.kristiyan:colorpicker-library:1.1.8'
 }
-
 
 apply plugin: 'com.google.gms.google-services'

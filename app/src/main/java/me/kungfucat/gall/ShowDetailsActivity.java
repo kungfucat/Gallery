@@ -498,7 +498,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
                 Uri resultUri = result.getUri();
 
                 File filepath = Environment.getExternalStorageDirectory();
-                File dir = new File(filepath + "/Cropped Pictures/");
+                File dir = new File(filepath + "/Cropped Images/");
                 dir.mkdir();
 
                 // Create a name for the saved image

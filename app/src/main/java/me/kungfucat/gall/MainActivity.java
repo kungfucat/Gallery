@@ -1,6 +1,8 @@
 package me.kungfucat.gall;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -13,14 +15,16 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.yalantis.guillotine.animation.GuillotineAnimation;
+import com.yalantis.guillotine.interfaces.GuillotineListener;
 
 import java.io.File;
 import java.net.URLConnection;
@@ -33,8 +37,9 @@ import java.util.Map;
 import java.util.Set;
 
 import me.kungfucat.gall.interfaces.OnItemClickListener;
+import petrov.kristiyan.colorpicker.ColorPicker;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
     //TODO: Remove the meta-data from manifest and re-enable the crash analytics
     RecyclerView recyclerView;
     FoldersAdapter foldersAdapter;
@@ -43,21 +48,22 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<FoldersModel> foldersModelArrayList = new ArrayList<>();
     Toolbar toolbar;
 
+    Context context;
     //for guillotine menu
     FrameLayout root;
     View contentHamburger;
+    LinearLayout colorPickerLinearLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        context = this;
         root = findViewById(R.id.root);
         contentHamburger = findViewById(R.id.content_hamburger);
         toolbar = findViewById(R.id.mainActivityToolBar);
         recyclerView = findViewById(R.id.foldersRecyclerView);
-
-
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         foldersAdapter = new FoldersAdapter(this, foldersModelArrayList);
         recyclerView.setAdapter(foldersAdapter);
@@ -67,17 +73,31 @@ public class MainActivity extends AppCompatActivity {
         //main steps
         View guillotineMenu = LayoutInflater.from(this).inflate(R.layout.guillotine_menu, null);
         root.addView(guillotineMenu);
+        colorPickerLinearLayout=guillotineMenu.findViewById(R.id.colorPickerLinearLayout);
 
         new GuillotineAnimation.GuillotineBuilder(guillotineMenu, guillotineMenu.findViewById(R.id.guillotine_hamburger), contentHamburger)
-                .setStartDelay(100)
+                .setStartDelay(10)
                 .setActionBarViewForAnimation(toolbar)
                 .setClosedOnStart(true)
                 .build();
 
+        LinearLayout rootGuillotine=findViewById(R.id.rootGuillotineLinearLayout);
+
+        //to prevent onClick's from the guillotine menu
+        rootGuillotine.setOnClickListener(null);
+        final LinearLayout groupSmallFolders=findViewById(R.id.groupSmallFoldersLinearLayout);
+        groupSmallFolders.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SwitchCompat switchCompat=groupSmallFolders.findViewById(R.id.groupSmallFoldersSwitcher);
+                switchCompat.toggle();
+            }
+        });
+
+
         recyclerView.addOnItemTouchListener(new ImageClickedListener(this, new OnItemClickListener() {
             @Override
             public void onItemClick(View view, final int position) {
-
                 Intent intent = new Intent(getApplicationContext(), SingleFolderActivity.class);
                 intent.putParcelableArrayListExtra("data", foldersModelArrayList.get(position).getImageModelsList());
                 intent.putExtra("bucket", foldersModelArrayList.get(position).getFoldersName());
@@ -98,8 +118,16 @@ public class MainActivity extends AppCompatActivity {
                         REQUEST_PERMISSIONS_CODE);
             }
         } else {
-           loadImages();
+            loadImages();
         }
+
+        colorPickerLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ColorPicker colorPicker = new ColorPicker((Activity) context);
+                colorPicker.show();
+            }
+        });
     }
 
     @Override
@@ -136,7 +164,6 @@ public class MainActivity extends AppCompatActivity {
                 null,       // Selection arguments (none)
                 orderBy + " DESC"       // Ordering
         );
-//        Log.i("ListingImages", " query count=" + cur.getCount());
 
         if (cur.moveToFirst()) {
             String bucket;
@@ -165,8 +192,8 @@ public class MainActivity extends AppCompatActivity {
 
                 bucket = bucket.substring(0, 1).toUpperCase() + bucket.substring(1).toLowerCase();
                 File file = new File(uriObtained);
-                String mimeType= URLConnection.guessContentTypeFromName(cur.getString(columnIndex));
-                if (file.exists() && mimeType!=null && mimeType.startsWith("image")) {
+                String mimeType = URLConnection.guessContentTypeFromName(cur.getString(columnIndex));
+                if (file.exists() && mimeType != null && mimeType.startsWith("image")) {
                     ImageModel imageModel = new ImageModel();
                     imageModel.setTitle(bucket);
                     imageModel.setUrl(cur.getString(columnIndex));
@@ -229,5 +256,6 @@ public class MainActivity extends AppCompatActivity {
 //            }
         }
     }
+
 }
 
