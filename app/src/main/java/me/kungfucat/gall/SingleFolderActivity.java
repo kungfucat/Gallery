@@ -49,14 +49,14 @@ public class SingleFolderActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     vibrator.vibrate(50);
-                    Intent intent = new Intent(context, MainActivity.class);
+                    Intent intent=new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(intent);
                 }
             });
 
 
             if (imageModelsList.isEmpty()) {
-                Intent intent = new Intent(this, MainActivity.class);
+                Intent intent=new Intent(this, MainActivity.class);
                 startActivity(intent);
             }
             adapter = new MyAdapter(this, imageModelsList);
@@ -77,9 +77,7 @@ public class SingleFolderActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        super.onBackPressed();
+        finish();
     }
 }
 

@@ -48,8 +48,7 @@ import petrov.kristiyan.colorpicker.ColorPicker;
 public class MainActivity extends AppCompatActivity {
     //TODO: Remove the meta-data from manifest and re-enable the crash analytics
     private static final int REQUEST_PERMISSIONS_CODE = 100;
-    static ArrayList<FoldersModel> foldersModelArrayList = new ArrayList<>();
-
+    ArrayList<FoldersModel> foldersModelArrayList;
 
     Toolbar toolbar;
     ViewPager mainViewPager;
@@ -71,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
         context = this;
         map = new HashMap<>();
+        foldersModelArrayList=new ArrayList<>();
 
         root = findViewById(R.id.root);
         contentHamburger = findViewById(R.id.content_hamburger);
@@ -228,18 +228,19 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
+
     }
 
     public static class ImageFoldersFragment extends Fragment {
 
-        public ImageFoldersFragment(){
+        public ImageFoldersFragment() {
 
         }
 
         public static ImageFoldersFragment newInstance(int position, ArrayList<FoldersModel> foldersModels) {
             ImageFoldersFragment fragment = new ImageFoldersFragment();
             Bundle bundle = new Bundle();
-//            bundle.putParcelableArrayList("foldersData", foldersModels);
+            bundle.putParcelableArrayList("foldersData", foldersModels);
             bundle.putInt("position", position);
             fragment.setArguments(bundle);
             return fragment;
@@ -251,16 +252,16 @@ public class MainActivity extends AppCompatActivity {
             View view = inflater.inflate(R.layout.fragment_image, container, false);
             RecyclerView recyclerView = view.findViewById(R.id.imageFoldersRecyclerView);
             Bundle bundle = getArguments();
-//            ArrayList<FoldersModel> foldersModel = bundle.getParcelableArrayList("foldersData");
-            recyclerView.setLayoutManager(new GridLayoutManager(getContext(),2));
-            recyclerView.setAdapter(new FoldersAdapter(getContext(), MainActivity.foldersModelArrayList));
+            final ArrayList<FoldersModel> foldersModel = bundle.getParcelableArrayList("foldersData");
+            recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+            recyclerView.setAdapter(new FoldersAdapter(getContext(),foldersModel));
 
             recyclerView.addOnItemTouchListener(new ImageClickedListener(getContext(), new OnItemClickListener() {
                 @Override
                 public void onItemClick(View view, final int position) {
                     Intent intent = new Intent(getContext(), SingleFolderActivity.class);
-                    intent.putParcelableArrayListExtra("data", MainActivity.foldersModelArrayList.get(position).getImageModelsList());
-                    intent.putExtra("bucket", MainActivity.foldersModelArrayList.get(position).getFoldersName());
+                    intent.putParcelableArrayListExtra("data", foldersModel.get(position).getImageModelsList());
+                    intent.putExtra("bucket", foldersModel.get(position).getFoldersName());
                     startActivity(intent);
                 }
             }));
@@ -268,6 +269,7 @@ public class MainActivity extends AppCompatActivity {
             return view;
         }
     }
+
 
     class MainPagerAdapter extends FragmentPagerAdapter {
         String[] tabs = {"Images", "Videos"};

@@ -92,6 +92,12 @@ public class ShowDetailsActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
     public void setRandomPagerAdapter() {
         Random random = new Random();
 
@@ -183,10 +189,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     vibrator.vibrate(50);
-                    Intent intent = new Intent(getActivity(), SingleFolderActivity.class);
-                    intent.putExtra("bucket", title);
-                    intent.putExtra("data", ShowDetailsActivity.imageModelArrayList);
-                    startActivity(intent);
+                    getActivity().onBackPressed();
                 }
             });
 
@@ -194,10 +197,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     vibrator.vibrate(50);
-                    Intent intent = new Intent(getActivity(), SingleFolderActivity.class);
-                    intent.putExtra("bucket", title);
-                    intent.putExtra("data", ShowDetailsActivity.imageModelArrayList);
-                    getActivity().startActivity(intent);
+                    getActivity().onBackPressed();
                 }
             });
 
@@ -334,6 +334,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
                                             intent.putExtra("data", ShowDetailsActivity.imageModelArrayList);
                                             startActivity(intent);
                                             Toast.makeText(getActivity(), "Successfully Deleted", Toast.LENGTH_LONG).show();
+
                                         } else {
                                             Toast.makeText(getActivity(), "Unsuccessful", Toast.LENGTH_LONG).show();
                                         }
