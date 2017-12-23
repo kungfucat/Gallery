@@ -11,15 +11,16 @@ public class ImageModel implements Parcelable {
     String title;
     String url;
     String date;
+    Boolean isAVideo = false;
 
     public ImageModel() {
-
     }
 
     public ImageModel(Parcel in) {
         this.title = in.readString();
         this.url = in.readString();
         this.date = in.readString();
+        this.isAVideo = in.readByte() != 0;
     }
 
     public static final Creator<ImageModel> CREATOR = new Creator<ImageModel>() {
@@ -58,6 +59,14 @@ public class ImageModel implements Parcelable {
         return date;
     }
 
+    public Boolean getAVideo() {
+        return isAVideo;
+    }
+
+    public void setAVideo(Boolean AVideo) {
+        isAVideo = AVideo;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -68,5 +77,6 @@ public class ImageModel implements Parcelable {
         parcel.writeString(title);
         parcel.writeString(url);
         parcel.writeString(date);
+        parcel.writeByte((byte) (isAVideo ? 1 : 0));
     }
 }

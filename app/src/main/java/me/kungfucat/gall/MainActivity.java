@@ -3,28 +3,31 @@ package me.kungfucat.gall;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.yalantis.guillotine.animation.GuillotineAnimation;
-import com.yalantis.guillotine.interfaces.GuillotineListener;
 
 import java.io.File;
 import java.net.URLConnection;
@@ -36,44 +39,54 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import me.kungfucat.gall.interfaces.OnItemClickListener;
+import github.chenupt.springindicator.SpringIndicator;
 import petrov.kristiyan.colorpicker.ColorPicker;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
     //TODO: Remove the meta-data from manifest and re-enable the crash analytics
     RecyclerView recyclerView;
     FoldersAdapter foldersAdapter;
     private static final int REQUEST_PERMISSIONS_CODE = 100;
-    ArrayList<ImageModel> imageModelsList = new ArrayList<>();
     ArrayList<FoldersModel> foldersModelArrayList = new ArrayList<>();
+
+
     Toolbar toolbar;
+    ViewPager mainViewPager;
+    SpringIndicator indicator;
+    MainPagerAdapter mainPagerAdapter;
 
     Context context;
     //for guillotine menu
     FrameLayout root;
     View contentHamburger;
     LinearLayout colorPickerLinearLayout;
+    HashMap<String, ArrayList<ImageModel>> map;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         context = this;
+        map = new HashMap<>();
+
         root = findViewById(R.id.root);
         contentHamburger = findViewById(R.id.content_hamburger);
         toolbar = findViewById(R.id.mainActivityToolBar);
-        recyclerView = findViewById(R.id.foldersRecyclerView);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        foldersAdapter = new FoldersAdapter(this, foldersModelArrayList);
-        recyclerView.setAdapter(foldersAdapter);
 
         setSupportActionBar(toolbar);
+        mainViewPager = findViewById(R.id.mainViewPager);
+        indicator = findViewById(R.id.indicator);
+
+        mainPagerAdapter = new MainPagerAdapter(getSupportFragmentManager(), foldersModelArrayList);
+        mainViewPager.setAdapter(mainPagerAdapter);
+        indicator.setViewPager(mainViewPager);
 
         //main steps
         View guillotineMenu = LayoutInflater.from(this).inflate(R.layout.guillotine_menu, null);
         root.addView(guillotineMenu);
-        colorPickerLinearLayout=guillotineMenu.findViewById(R.id.colorPickerLinearLayout);
+        colorPickerLinearLayout = guillotineMenu.findViewById(R.id.colorPickerLinearLayout);
 
         new GuillotineAnimation.GuillotineBuilder(guillotineMenu, guillotineMenu.findViewById(R.id.guillotine_hamburger), contentHamburger)
                 .setStartDelay(10)
@@ -81,29 +94,18 @@ public class MainActivity extends AppCompatActivity{
                 .setClosedOnStart(true)
                 .build();
 
-        LinearLayout rootGuillotine=findViewById(R.id.rootGuillotineLinearLayout);
+        LinearLayout rootGuillotine = findViewById(R.id.rootGuillotineLinearLayout);
 
         //to prevent onClick's from the guillotine menu
         rootGuillotine.setOnClickListener(null);
-        final LinearLayout groupSmallFolders=findViewById(R.id.groupSmallFoldersLinearLayout);
+        final LinearLayout groupSmallFolders = findViewById(R.id.groupSmallFoldersLinearLayout);
         groupSmallFolders.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SwitchCompat switchCompat=groupSmallFolders.findViewById(R.id.groupSmallFoldersSwitcher);
+                SwitchCompat switchCompat = groupSmallFolders.findViewById(R.id.groupSmallFoldersSwitcher);
                 switchCompat.toggle();
             }
         });
-
-
-        recyclerView.addOnItemTouchListener(new ImageClickedListener(this, new OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, final int position) {
-                Intent intent = new Intent(getApplicationContext(), SingleFolderActivity.class);
-                intent.putParcelableArrayListExtra("data", foldersModelArrayList.get(position).getImageModelsList());
-                intent.putExtra("bucket", foldersModelArrayList.get(position).getFoldersName());
-                startActivity(intent);
-            }
-        }));
 
         if ((ContextCompat.checkSelfPermission(
                 getApplicationContext(),
@@ -145,9 +147,10 @@ public class MainActivity extends AppCompatActivity{
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+
     public void loadImages() {
         //store bucket name and the image model's associated with it
-        HashMap<String, ArrayList<ImageModel>> map = new HashMap<>();
+
         String[] projection = new String[]{
                 MediaStore.Images.Media._ID,
                 MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
@@ -185,7 +188,7 @@ public class MainActivity extends AppCompatActivity{
                     SimpleDateFormat dateFormat = new SimpleDateFormat(format, Locale.ENGLISH);
                     dateTime = dateFormat.format(new Date(Long.parseLong(date)));
                 } catch (Exception e) {
-
+                    dateTime = "Unknown";
                 }
 
                 String uriObtained = cur.getString(columnIndex);
@@ -198,7 +201,6 @@ public class MainActivity extends AppCompatActivity{
                     imageModel.setTitle(bucket);
                     imageModel.setUrl(cur.getString(columnIndex));
                     imageModel.setDate(dateTime);
-                    imageModelsList.add(imageModel);
 
                     if (!map.containsKey(bucket)) {
                         ArrayList<ImageModel> temp = new ArrayList<>();
@@ -216,7 +218,6 @@ public class MainActivity extends AppCompatActivity{
 
             Set<Map.Entry<String, ArrayList<ImageModel>>> st = map.entrySet();
 
-
             for (Map.Entry<String, ArrayList<ImageModel>> me : st) {
                 FoldersModel foldersModel = new FoldersModel();
                 foldersModel.setFoldersName(me.getKey());
@@ -224,38 +225,62 @@ public class MainActivity extends AppCompatActivity{
                 foldersModelArrayList.add(foldersModel);
             }
 
-//            HashMap<String, ArrayList<ImageModel>> newMap = new HashMap<>();
-//            Log.d("MAPSIZE", String.valueOf(map.size()));
-//            for (Map.Entry<String, ArrayList<ImageModel>> me : st) {
-//                if (me.getValue().size() < 5) {
-//                    if (newMap.containsKey("Others")) {
-//
-//                        ArrayList<ImageModel> temp = newMap.get("Others");
-//
-//                        for (int i = 0; i < me.getValue().size(); i++) {
-//                            temp.add(me.getValue().get(i));
-//                        }
-//
-//                        newMap.put("Others", temp);
-//                    } else {
-//                        newMap.put("Others", me.getValue());
-//                    }
-//                } else {
-//
-//                    newMap.put(me.getKey(), me.getValue());
-//                }
-//            }
-//
-//            Set<Map.Entry<String, ArrayList<ImageModel>>> newSet = newMap.entrySet();
-//
-//            for (Map.Entry<String, ArrayList<ImageModel>> me : newSet) {
-//                FoldersModel foldersModel = new FoldersModel();
-//                foldersModel.setFoldersName(me.getKey());
-//                foldersModel.setImageModelsList(me.getValue());
-//                foldersModelArrayList.add(foldersModel);
-//            }
         }
     }
 
+    public static class ImageFoldersFragment extends Fragment {
+
+        public ImageFoldersFragment(){
+
+        }
+
+        public static ImageFoldersFragment newInstance(int position, ArrayList<FoldersModel> foldersModels) {
+            ImageFoldersFragment fragment = new ImageFoldersFragment();
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList("foldersData", foldersModels);
+            bundle.putInt("position", position);
+            fragment.setArguments(bundle);
+            return fragment;
+        }
+
+        @Nullable
+        @Override
+        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            View view = inflater.inflate(R.layout.fragment_image, container, false);
+            RecyclerView recyclerView = view.findViewById(R.id.imageFoldersRecyclerView);
+            Bundle bundle = getArguments();
+            ArrayList<FoldersModel> foldersModel = bundle.getParcelableArrayList("foldersData");
+            recyclerView.setAdapter(new FoldersAdapter(getContext(), foldersModel));
+
+            return view;
+        }
+    }
+
+    class MainPagerAdapter extends FragmentPagerAdapter {
+        String[] tabs = {"Images", "Videos"};
+        ArrayList<FoldersModel> foldersModelArrayList;
+
+        public MainPagerAdapter(FragmentManager fm, ArrayList<FoldersModel> list) {
+            super(fm);
+            foldersModelArrayList = list;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            ImageFoldersFragment fragment = ImageFoldersFragment.newInstance(position, foldersModelArrayList);
+            return fragment;
+        }
+
+        @Override
+        public int getCount() {
+            return 2;
+        }
+
+        @Nullable
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return tabs[position];
+        }
+    }
 }
 

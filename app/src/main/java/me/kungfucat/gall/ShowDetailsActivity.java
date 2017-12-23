@@ -530,7 +530,6 @@ public class ShowDetailsActivity extends AppCompatActivity {
                 sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(destinationFileName)));
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
-                Log.d("UNSUCCESS", String.valueOf(error));
             }
         }
     }
@@ -552,7 +551,6 @@ public class ShowDetailsActivity extends AppCompatActivity {
                     imageModelArrayList.get(position).getTitle(),
                     imageModelArrayList.get(position).getUrl(),
                     imageModelArrayList.get(position).getDate());
-            Log.d("DATE", imageModelArrayList.get(position).getDate());
             return fragment;
         }
 

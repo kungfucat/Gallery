@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import me.kungfucat.gall.MyAppGlideModule;
@@ -23,9 +24,9 @@ public class FoldersAdapter extends RecyclerView.Adapter<FoldersAdapter.FolderVi
 
     LayoutInflater inflater;
     Context context;
-    List<FoldersModel> foldersModelList = Collections.emptyList();
+    ArrayList<FoldersModel> foldersModelList = null;
 
-    public FoldersAdapter(Context context, List<FoldersModel> list) {
+    public FoldersAdapter(Context context, ArrayList<FoldersModel> list) {
         this.context = context;
         inflater = LayoutInflater.from(context);
         foldersModelList = list;
