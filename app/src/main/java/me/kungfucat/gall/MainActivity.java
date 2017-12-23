@@ -3,6 +3,7 @@ package me.kungfucat.gall;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -17,6 +18,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
@@ -40,14 +42,13 @@ import java.util.Map;
 import java.util.Set;
 
 import github.chenupt.springindicator.SpringIndicator;
+import me.kungfucat.gall.interfaces.OnItemClickListener;
 import petrov.kristiyan.colorpicker.ColorPicker;
 
 public class MainActivity extends AppCompatActivity {
     //TODO: Remove the meta-data from manifest and re-enable the crash analytics
-    RecyclerView recyclerView;
-    FoldersAdapter foldersAdapter;
     private static final int REQUEST_PERMISSIONS_CODE = 100;
-    ArrayList<FoldersModel> foldersModelArrayList = new ArrayList<>();
+    static ArrayList<FoldersModel> foldersModelArrayList = new ArrayList<>();
 
 
     Toolbar toolbar;
@@ -79,6 +80,22 @@ public class MainActivity extends AppCompatActivity {
         mainViewPager = findViewById(R.id.mainViewPager);
         indicator = findViewById(R.id.indicator);
 
+        if ((ContextCompat.checkSelfPermission(
+                getApplicationContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
+            if ((ActivityCompat.shouldShowRequestPermissionRationale(
+                    MainActivity.this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE))) {
+
+            } else {
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
+                        REQUEST_PERMISSIONS_CODE);
+            }
+        } else {
+            loadImages();
+        }
+
         mainPagerAdapter = new MainPagerAdapter(getSupportFragmentManager(), foldersModelArrayList);
         mainViewPager.setAdapter(mainPagerAdapter);
         indicator.setViewPager(mainViewPager);
@@ -107,21 +124,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        if ((ContextCompat.checkSelfPermission(
-                getApplicationContext(),
-                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-            if ((ActivityCompat.shouldShowRequestPermissionRationale(
-                    MainActivity.this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE))) {
-
-            } else {
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
-                        REQUEST_PERMISSIONS_CODE);
-            }
-        } else {
-            loadImages();
-        }
 
         colorPickerLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -237,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
         public static ImageFoldersFragment newInstance(int position, ArrayList<FoldersModel> foldersModels) {
             ImageFoldersFragment fragment = new ImageFoldersFragment();
             Bundle bundle = new Bundle();
-            bundle.putParcelableArrayList("foldersData", foldersModels);
+//            bundle.putParcelableArrayList("foldersData", foldersModels);
             bundle.putInt("position", position);
             fragment.setArguments(bundle);
             return fragment;
@@ -249,8 +251,19 @@ public class MainActivity extends AppCompatActivity {
             View view = inflater.inflate(R.layout.fragment_image, container, false);
             RecyclerView recyclerView = view.findViewById(R.id.imageFoldersRecyclerView);
             Bundle bundle = getArguments();
-            ArrayList<FoldersModel> foldersModel = bundle.getParcelableArrayList("foldersData");
-            recyclerView.setAdapter(new FoldersAdapter(getContext(), foldersModel));
+//            ArrayList<FoldersModel> foldersModel = bundle.getParcelableArrayList("foldersData");
+            recyclerView.setLayoutManager(new GridLayoutManager(getContext(),2));
+            recyclerView.setAdapter(new FoldersAdapter(getContext(), MainActivity.foldersModelArrayList));
+
+            recyclerView.addOnItemTouchListener(new ImageClickedListener(getContext(), new OnItemClickListener() {
+                @Override
+                public void onItemClick(View view, final int position) {
+                    Intent intent = new Intent(getContext(), SingleFolderActivity.class);
+                    intent.putParcelableArrayListExtra("data", MainActivity.foldersModelArrayList.get(position).getImageModelsList());
+                    intent.putExtra("bucket", MainActivity.foldersModelArrayList.get(position).getFoldersName());
+                    startActivity(intent);
+                }
+            }));
 
             return view;
         }
