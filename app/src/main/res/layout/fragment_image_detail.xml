@@ -130,7 +130,7 @@
             android:padding="5dp"
             android:text="Set Image As"
             android:textColor="#ffffff"
-            android:textSize="18sp" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/editImage"
@@ -141,7 +141,7 @@
             android:padding="5dp"
             android:text="Edit Image"
             android:textColor="#ffffff"
-            android:textSize="18sp" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/cropImage"
@@ -152,7 +152,7 @@
             android:padding="5dp"
             android:text="Crop"
             android:textColor="#ffffff"
-            android:textSize="18sp" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/detailsOfImageInMore"
@@ -163,7 +163,7 @@
             android:padding="5dp"
             android:text="Details"
             android:textColor="#ffffff"
-            android:textSize="18sp" />
+            android:textSize="14sp" />
 
 
     </LinearLayout>

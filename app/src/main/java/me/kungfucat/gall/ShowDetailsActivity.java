@@ -158,13 +158,13 @@ public class ShowDetailsActivity extends AppCompatActivity {
 
         @Override
         public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.fragment_detail, container, false);
+            View view = inflater.inflate(R.layout.fragment_image_detail, container, false);
             PhotoView photoView = view.findViewById(R.id.imageDetails);
 
             Bundle bundle = getArguments();
             final int position = bundle.getInt("position");
-            final String uriOfImage = bundle.getString("url");
             final String title = bundle.getString("title");
+            final String uriOfImage = bundle.getString("url");
             String dateTaken = bundle.getString("date");
 
 

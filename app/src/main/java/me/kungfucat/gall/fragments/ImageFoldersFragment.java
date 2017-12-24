@@ -47,6 +47,8 @@ public class ImageFoldersFragment extends Fragment {
         Bundle bundle = getArguments();
 
         final ArrayList<FoldersModel> foldersModel = bundle.getParcelableArrayList("foldersData");
+        int position=bundle.getInt("position");
+
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         recyclerView.setAdapter(new FoldersAdapter(getContext(), foldersModel));
 
