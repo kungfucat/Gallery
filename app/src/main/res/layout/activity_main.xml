@@ -16,17 +16,17 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/mainActivityToolBar"
             android:layout_width="match_parent"
-            android:layout_height="?android:attr/actionBarSize"
+            android:layout_height="wrap_content"
             android:background="#000000">
 
 
-            <ImageView
-                android:id="@+id/content_hamburger"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:padding="4dp"
-                android:src="@drawable/ic_menu_90" />
+            <!--<ImageView-->
+                <!--android:id="@+id/content_hamburger"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="left"-->
+                <!--android:padding="4dp"-->
+                <!--android:src="@drawable/ic_menu_90" />-->
 
             <TextView
                 android:layout_width="match_parent"
@@ -47,16 +47,14 @@
             android:id="@+id/indicator"
             android:layout_width="match_parent"
             app:siRadiusMax="35dp"
-            android:layout_height="40dp"/>
+            android:layout_height="30dp"/>
 
 
         <android.support.v4.view.ViewPager
             android:id="@+id/mainViewPager"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
-
-        </android.support.v4.view.ViewPager>
+            android:layout_weight="1"/>
 
     </LinearLayout>
 </FrameLayout>

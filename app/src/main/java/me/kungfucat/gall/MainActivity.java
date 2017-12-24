@@ -1,7 +1,6 @@
 package me.kungfucat.gall;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,16 +19,11 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.Toast;
-
-import com.yalantis.guillotine.animation.GuillotineAnimation;
 
 import java.io.File;
 import java.net.URLConnection;
@@ -43,7 +37,6 @@ import java.util.Set;
 
 import github.chenupt.springindicator.SpringIndicator;
 import me.kungfucat.gall.interfaces.OnItemClickListener;
-import petrov.kristiyan.colorpicker.ColorPicker;
 
 public class MainActivity extends AppCompatActivity {
     //TODO: Remove the meta-data from manifest and re-enable the crash analytics
@@ -56,10 +49,6 @@ public class MainActivity extends AppCompatActivity {
     MainPagerAdapter mainPagerAdapter;
 
     Context context;
-    //for guillotine menu
-    FrameLayout root;
-    View contentHamburger;
-    LinearLayout colorPickerLinearLayout;
     HashMap<String, ArrayList<ImageModel>> map;
 
 
@@ -70,10 +59,8 @@ public class MainActivity extends AppCompatActivity {
 
         context = this;
         map = new HashMap<>();
-        foldersModelArrayList=new ArrayList<>();
+        foldersModelArrayList = new ArrayList<>();
 
-        root = findViewById(R.id.root);
-        contentHamburger = findViewById(R.id.content_hamburger);
         toolbar = findViewById(R.id.mainActivityToolBar);
 
         setSupportActionBar(toolbar);
@@ -99,39 +86,6 @@ public class MainActivity extends AppCompatActivity {
         mainPagerAdapter = new MainPagerAdapter(getSupportFragmentManager(), foldersModelArrayList);
         mainViewPager.setAdapter(mainPagerAdapter);
         indicator.setViewPager(mainViewPager);
-
-        //main steps
-        View guillotineMenu = LayoutInflater.from(this).inflate(R.layout.guillotine_menu, null);
-        root.addView(guillotineMenu);
-        colorPickerLinearLayout = guillotineMenu.findViewById(R.id.colorPickerLinearLayout);
-
-        new GuillotineAnimation.GuillotineBuilder(guillotineMenu, guillotineMenu.findViewById(R.id.guillotine_hamburger), contentHamburger)
-                .setStartDelay(10)
-                .setActionBarViewForAnimation(toolbar)
-                .setClosedOnStart(true)
-                .build();
-
-        LinearLayout rootGuillotine = findViewById(R.id.rootGuillotineLinearLayout);
-
-        //to prevent onClick's from the guillotine menu
-        rootGuillotine.setOnClickListener(null);
-        final LinearLayout groupSmallFolders = findViewById(R.id.groupSmallFoldersLinearLayout);
-        groupSmallFolders.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SwitchCompat switchCompat = groupSmallFolders.findViewById(R.id.groupSmallFoldersSwitcher);
-                switchCompat.toggle();
-            }
-        });
-
-
-        colorPickerLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ColorPicker colorPicker = new ColorPicker((Activity) context);
-                colorPicker.show();
-            }
-        });
     }
 
     @Override
@@ -254,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
             Bundle bundle = getArguments();
             final ArrayList<FoldersModel> foldersModel = bundle.getParcelableArrayList("foldersData");
             recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-            recyclerView.setAdapter(new FoldersAdapter(getContext(),foldersModel));
+            recyclerView.setAdapter(new FoldersAdapter(getContext(), foldersModel));
 
             recyclerView.addOnItemTouchListener(new ImageClickedListener(getContext(), new OnItemClickListener() {
                 @Override
