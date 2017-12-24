@@ -69,7 +69,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
 
         viewPager = findViewById(R.id.viewPager);
         viewPager.setAdapter(new MyAdapter(this, getSupportFragmentManager(), imageModelArrayList));
-        setRandomPagerAdapter();
+        setRandomPagerTransformer();
 
         viewPager.setCurrentItem(currentPosition);
         setTitle(imageModelArrayList.get(currentPosition).title);
@@ -98,7 +98,7 @@ public class ShowDetailsActivity extends AppCompatActivity {
         finish();
     }
 
-    public void setRandomPagerAdapter() {
+    public void setRandomPagerTransformer(){
         Random random = new Random();
 
         int i = random.nextInt(11);

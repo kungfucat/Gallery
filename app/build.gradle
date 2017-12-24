@@ -43,9 +43,6 @@ dependencies {
 
     //Recycler view animations
     compile 'jp.wasabeef:recyclerview-animators:2.2.7'
-//
-//    //Guillotine style menu
-//    compile 'com.github.Yalantis:GuillotineMenu-Android:1.2'
 
     //firebase core
     compile 'com.google.firebase:firebase-core:11.6.2'
@@ -67,9 +64,8 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
         transitive = true
     }
-    compile 'petrov.kristiyan:colorpicker-library:1.1.8'
 
     compile 'com.github.chenupt.android:springindicator:1.0.2@aar'
- }
+}
 
 apply plugin: 'com.google.gms.google-services'

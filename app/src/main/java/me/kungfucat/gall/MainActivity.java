@@ -2,7 +2,6 @@ package me.kungfucat.gall;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -17,13 +16,16 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.util.Log;
 import android.widget.Toast;
+
+import com.eftimoff.viewpagertransformers.AccordionTransformer;
+import com.eftimoff.viewpagertransformers.CubeInTransformer;
+import com.eftimoff.viewpagertransformers.CubeOutTransformer;
+import com.eftimoff.viewpagertransformers.DefaultTransformer;
+import com.eftimoff.viewpagertransformers.DepthPageTransformer;
+import com.eftimoff.viewpagertransformers.ZoomInTransformer;
 
 import java.io.File;
 import java.net.URLConnection;
@@ -36,20 +38,19 @@ import java.util.Map;
 import java.util.Set;
 
 import github.chenupt.springindicator.SpringIndicator;
-import me.kungfucat.gall.interfaces.OnItemClickListener;
+import me.kungfucat.gall.fragments.ImageFoldersFragment;
 
 public class MainActivity extends AppCompatActivity {
     //TODO: Remove the meta-data from manifest and re-enable the crash analytics
     private static final int REQUEST_PERMISSIONS_CODE = 100;
     ArrayList<FoldersModel> foldersModelArrayList;
-
+    ArrayList<FoldersModel> foldersModelArrayListVideos;
     Toolbar toolbar;
     ViewPager mainViewPager;
     SpringIndicator indicator;
     MainPagerAdapter mainPagerAdapter;
 
     Context context;
-    HashMap<String, ArrayList<ImageModel>> map;
 
 
     @Override
@@ -58,8 +59,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         context = this;
-        map = new HashMap<>();
         foldersModelArrayList = new ArrayList<>();
+        foldersModelArrayListVideos = new ArrayList<>();
 
         toolbar = findViewById(R.id.mainActivityToolBar);
 
@@ -81,11 +82,13 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             loadImages();
+            loadVideos();
         }
 
         mainPagerAdapter = new MainPagerAdapter(getSupportFragmentManager(), foldersModelArrayList);
         mainViewPager.setAdapter(mainPagerAdapter);
         indicator.setViewPager(mainViewPager);
+        mainViewPager.setPageTransformer(true, new DefaultTransformer());
     }
 
     @Override
@@ -94,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
             for (int i = 0; i < grantResults.length; i++) {
                 if (grantResults.length > 0 && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                     loadImages();
+                    loadVideos();
                 } else {
                     Toast.makeText(MainActivity.this, "Permission Denied", Toast.LENGTH_LONG).show();
                 }
@@ -103,10 +107,99 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+    public void loadVideos() {
+        //store bucket name and the image model's associated with it
+
+        HashMap<String, ArrayList<ImageModel>> map = new HashMap<>();
+
+        String[] projection = new String[]{
+                MediaStore.Video.Media._ID,
+                MediaStore.Video.Media.BUCKET_DISPLAY_NAME,
+                MediaStore.Video.Media.DATE_TAKEN,
+                MediaStore.Video.Media.DATA
+        };
+
+        Uri images = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+        String orderBy = android.provider.MediaStore.Video.Media.DATE_TAKEN;
+
+        Cursor cur = managedQuery(images,
+                projection, // Which columns to return
+                null,       // Which rows to return (all rows)
+                null,       // Selection arguments (none)
+                orderBy + " DESC"       // Ordering
+        );
+
+        if (cur.moveToFirst()) {
+            String bucket;
+            String date;
+            int columnIndex = cur.getColumnIndex(MediaStore.Video.Media.DATA);
+            int bucketColumn = cur.getColumnIndex(
+                    MediaStore.Video.Media.BUCKET_DISPLAY_NAME);
+
+            int dateColumn = cur.getColumnIndex(
+                    MediaStore.Video.Media.DATE_TAKEN);
+
+            do {
+                bucket = cur.getString(bucketColumn);
+                date = cur.getString(dateColumn);
+                String dateTime = "Unknown";
+
+                try {
+                    String format = "dd-MM-yyyy HH:mm";
+                    SimpleDateFormat dateFormat = new SimpleDateFormat(format, Locale.ENGLISH);
+                    dateTime = dateFormat.format(new Date(Long.parseLong(date)));
+                } catch (Exception e) {
+                    dateTime = "Unknown";
+                }
+
+                String uriObtained = cur.getString(columnIndex);
+
+                bucket = bucket.substring(0, 1).toUpperCase() + bucket.substring(1).toLowerCase();
+                File file = new File(uriObtained);
+                String mimeType = URLConnection.guessContentTypeFromName(cur.getString(columnIndex));
+
+                if (file.exists() && mimeType != null && mimeType.startsWith("video")) {
+                    ImageModel imageModel = new ImageModel();
+                    imageModel.setTitle(bucket);
+                    imageModel.setUrl(cur.getString(columnIndex));
+                    imageModel.setDate(dateTime);
+
+                    //set it is a video to true
+                    imageModel.setAVideo(true);
+
+                    if (!map.containsKey(bucket)) {
+                        ArrayList<ImageModel> temp = new ArrayList<>();
+                        temp.add(imageModel);
+                        map.put(bucket, temp);
+                    } else {
+                        ArrayList<ImageModel> current = map.get(bucket);
+                        current.add(imageModel);
+                        map.remove(bucket);
+                        map.put(bucket, current);
+                    }
+                }
+
+            } while (cur.moveToNext());
+
+            Set<Map.Entry<String, ArrayList<ImageModel>>> st = map.entrySet();
+
+            for (Map.Entry<String, ArrayList<ImageModel>> me : st) {
+                FoldersModel foldersModel = new FoldersModel();
+                foldersModel.setFoldersName(me.getKey());
+                foldersModel.setImageModelsList(me.getValue());
+                for(int i=0;i<me.getValue().size();i++){
+                    Log.d("VIDEOURIS",me.getValue().get(i).getUrl());
+                }
+                foldersModelArrayListVideos.add(foldersModel);
+            }
+
+        }
+    }
 
     public void loadImages() {
         //store bucket name and the image model's associated with it
 
+        HashMap<String, ArrayList<ImageModel>> map = new HashMap<>();
         String[] projection = new String[]{
                 MediaStore.Images.Media._ID,
                 MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
@@ -185,46 +278,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public static class ImageFoldersFragment extends Fragment {
-
-        public ImageFoldersFragment() {
-
-        }
-
-        public static ImageFoldersFragment newInstance(int position, ArrayList<FoldersModel> foldersModels) {
-            ImageFoldersFragment fragment = new ImageFoldersFragment();
-            Bundle bundle = new Bundle();
-            bundle.putParcelableArrayList("foldersData", foldersModels);
-            bundle.putInt("position", position);
-            fragment.setArguments(bundle);
-            return fragment;
-        }
-
-        @Nullable
-        @Override
-        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.fragment_image, container, false);
-            RecyclerView recyclerView = view.findViewById(R.id.imageFoldersRecyclerView);
-            Bundle bundle = getArguments();
-            final ArrayList<FoldersModel> foldersModel = bundle.getParcelableArrayList("foldersData");
-            recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-            recyclerView.setAdapter(new FoldersAdapter(getContext(), foldersModel));
-
-            recyclerView.addOnItemTouchListener(new ImageClickedListener(getContext(), new OnItemClickListener() {
-                @Override
-                public void onItemClick(View view, final int position) {
-                    Intent intent = new Intent(getContext(), SingleFolderActivity.class);
-                    intent.putParcelableArrayListExtra("data", foldersModel.get(position).getImageModelsList());
-                    intent.putExtra("bucket", foldersModel.get(position).getFoldersName());
-                    startActivity(intent);
-                }
-            }));
-
-            return view;
-        }
-    }
-
-
     class MainPagerAdapter extends FragmentPagerAdapter {
         String[] tabs = {"Images", "Videos"};
         ArrayList<FoldersModel> foldersModelArrayList;
@@ -236,8 +289,16 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            ImageFoldersFragment fragment = ImageFoldersFragment.newInstance(position, foldersModelArrayList);
-            return fragment;
+            Fragment myFragment = null;
+            if (position == 0) {
+                ImageFoldersFragment fragment = ImageFoldersFragment.newInstance(position, foldersModelArrayList);
+                myFragment = fragment;
+            }
+            if (position == 1) {
+                ImageFoldersFragment fragment = ImageFoldersFragment.newInstance(position, foldersModelArrayListVideos);
+                myFragment = fragment;
+            }
+            return myFragment;
         }
 
         @Override
