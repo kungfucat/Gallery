@@ -52,13 +52,18 @@ public class ImageFoldersFragment extends Fragment {
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         recyclerView.setAdapter(new FoldersAdapter(getContext(), foldersModel));
 
-        recyclerView.addOnItemTouchListener(new ImageClickedListener(getContext(), new OnItemClickListener() {
+        recyclerView.addOnItemTouchListener(new ImageClickedListener(getContext(), recyclerView,new OnItemClickListener() {
             @Override
             public void onItemClick(View view, final int position) {
                 Intent intent = new Intent(getContext(), SingleFolderActivity.class);
                 intent.putParcelableArrayListExtra("data", foldersModel.get(position).getImageModelsList());
                 intent.putExtra("bucket", foldersModel.get(position).getFoldersName());
                 startActivity(intent);
+            }
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+
             }
         }));
 

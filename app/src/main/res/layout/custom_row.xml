@@ -5,6 +5,15 @@
     android:padding="@dimen/padding">
 
     <ImageView
+        android:id="@+id/selectedCheckIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:elevation="1dp"
+        android:src="@drawable/ic_check_circle_white_24dp"
+        android:visibility="gone" />
+
+    <ImageView
         android:id="@+id/action_play_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -18,10 +27,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:textColor="#ffffff"
         android:elevation="1dp"
         android:text="00:00"
-        android:visibility="gone"/>
+        android:textColor="#ffffff"
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/imageView"

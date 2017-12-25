@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -39,10 +39,64 @@
     </android.support.v7.widget.Toolbar>
 
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/selectionToolBar"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:background="#ffffff"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/selectionBackArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_dark_arrow"
+                android:backgroundTint="#000000"
+                android:paddingRight="5dp" />
+
+            <TextView
+                android:id="@+id/selectedTextTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:text="1 Selected"
+                android:textColor="#000000"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/shareSelectedIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:background="@drawable/ic_dark_share"
+                android:backgroundTint="#000000" />
+
+            <ImageView
+                android:id="@+id/deleteSelectedIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/ic_dark_delete"
+                android:backgroundTint="#000000"
+                android:paddingRight="10dp" />
+
+        </LinearLayout>
+
+    </android.support.v7.widget.Toolbar>
+
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerViewForAllImages"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="?android:attr/actionBarSize"
         android:layout_weight="1"
         android:padding="@dimen/padding" />
-</LinearLayout>
+</FrameLayout>

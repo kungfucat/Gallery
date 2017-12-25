@@ -17,6 +17,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -160,6 +161,8 @@ public class ShowDetailsVideoActivity extends AppCompatActivity {
             final VideoView videoView = view.findViewById(R.id.videoView);
             final Uri fileUriOfVideo = Uri.parse(String.valueOf(new File(uriOfVideo)));
 
+            Log.d("VIDEOCURRENTLYPLAYING", String.valueOf(fileUriOfVideo));
+
             final Toolbar videoToolbar = view.findViewById(R.id.videoToolbar);
             ImageView videoToolbarBackArrow = view.findViewById(R.id.videoToolbarBackArrow);
             TextView videoToolbarTextView = view.findViewById(R.id.videoTitle);
@@ -274,7 +277,6 @@ public class ShowDetailsVideoActivity extends AppCompatActivity {
             videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mediaPlayer) {
-                    vibrator.vibrate(50);
                     videoView.stopPlayback();
                     videoView.setVisibility(View.GONE);
                     clickToPlayImageView.setVisibility(View.VISIBLE);
@@ -374,7 +376,7 @@ public class ShowDetailsVideoActivity extends AppCompatActivity {
                 }
             });
 
-            rootOfVideoDetails.setOnTouchListener(null);
+            rootOfVideoDetails.setOnClickListener(null);
             descriptionVideoBottomBar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
