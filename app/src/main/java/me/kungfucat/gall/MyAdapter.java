@@ -1,10 +1,11 @@
 package me.kungfucat.gall;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.media.MediaMetadataRetriever;
-import android.net.Uri;
+import android.media.ThumbnailUtils;
+import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -12,10 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,7 +33,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         data = list;
         this.context = context;
         inflater = LayoutInflater.from(context);
-        selectedIds=new boolean[list.size()+10];
+        selectedIds = new boolean[list.size() + 10];
     }
 
 
@@ -52,7 +51,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder,  int position) {
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        ImageView checkImageView = holder.checkImageView;
+        ImageView previewImageView = holder.imageView;
 
         if (!data.get(position).getAVideo()) {
             GlideApp.with(context)
@@ -61,59 +62,35 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                     .override(200, 200)
                     .thumbnail(0.5f)
                     .placeholder(new ColorDrawable(Color.BLACK))
-                    .into(holder.imageView);
+                    .into(previewImageView);
 
-            FrameLayout.LayoutParams layoutParams=new FrameLayout.LayoutParams
+            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams
                     (ViewGroup.LayoutParams.WRAP_CONTENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER);
-            holder.checkImageView.setLayoutParams(layoutParams);
+            checkImageView.setLayoutParams(layoutParams);
         }
+
         //if is a video
         else if (data.get(position).getAVideo()) {
 
+            File file = new File(data.get(position).getUrl());
+            Bitmap bMap = ThumbnailUtils.createVideoThumbnail(file.getAbsolutePath(), MediaStore.Video.Thumbnails.MICRO_KIND);
+
             GlideApp.with(context)
                     .asBitmap()
-                    .load(data.get(position).getUrl())
                     .override(100, 100)
-                    .thumbnail(0.5f)
-                    .placeholder(new ColorDrawable(Color.BLACK))
-                    .into(holder.imageView);
+                    .load(bMap)
+
+                    .into(previewImageView);
 
             ImageView playIcon = holder.playIcon;
-            TextView playTimeTextView = holder.playTimeTextView;
             playIcon.setVisibility(View.VISIBLE);
-            playTimeTextView.setVisibility(View.VISIBLE);
-
-
-            MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
-            mediaMetadataRetriever.setDataSource(context, Uri.fromFile(new File(data.get(position).getUrl())));
-            String time = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-
-            long timeInMillisec = Long.parseLong(time);
-            long seconds = timeInMillisec / 1000;
-            long minutes = seconds / 60;
-            seconds = seconds % 60;
-            String minutesString = "";
-            String secondsString = "";
-            if (minutes < 10) {
-                minutesString = "0" + minutes;
-            } else {
-                minutesString = "" + minutes;
-            }
-            if (seconds < 10) {
-                secondsString = "0" + seconds;
-            } else {
-                secondsString = "" + seconds;
-            }
-            String videoTimeText = minutesString + ":" + secondsString;
-            playTimeTextView.setText(videoTimeText);
         }
 
-        if(selectedIds[position]){
-            holder.checkImageView.setVisibility(View.VISIBLE);
-        }
-        else {
-            holder.checkImageView.setVisibility(View.GONE);
+        if (selectedIds[position]) {
+            checkImageView.setVisibility(View.VISIBLE);
+        } else {
+            checkImageView.setVisibility(View.GONE);
         }
     }
 
@@ -126,14 +103,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         ImageView imageView;
         ImageView playIcon;
         ImageView checkImageView;
-        TextView playTimeTextView;
 
         public ViewHolder(View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.imageView);
             playIcon = itemView.findViewById(R.id.action_play_icon);
-            playTimeTextView = itemView.findViewById(R.id.time_of_video);
-            checkImageView=itemView.findViewById(R.id.selectedCheckIcon);
+            checkImageView = itemView.findViewById(R.id.selectedCheckIcon);
         }
     }
 }

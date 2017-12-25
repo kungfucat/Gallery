@@ -9,9 +9,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
-        android:elevation="1dp"
-        android:src="@drawable/ic_check_circle_white_24dp"
-        android:visibility="gone" />
+        android:background="@drawable/ic_check_circle_white_24dp"
+        android:backgroundTint="@color/darkColour"
+        android:elevation="1dp" />
 
     <ImageView
         android:id="@+id/action_play_icon"
@@ -22,15 +22,6 @@
         android:src="@drawable/ic_action_play"
         android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/time_of_video"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:elevation="1dp"
-        android:text="00:00"
-        android:textColor="#ffffff"
-        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/imageView"

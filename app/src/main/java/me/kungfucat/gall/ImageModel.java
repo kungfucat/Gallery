@@ -11,6 +11,8 @@ public class ImageModel implements Parcelable {
     String title;
     String url;
     String date;
+
+    //video attributes
     Boolean isAVideo = false;
 
     public ImageModel() {

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -20,12 +21,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.eftimoff.viewpagertransformers.AccordionTransformer;
-import com.eftimoff.viewpagertransformers.CubeInTransformer;
-import com.eftimoff.viewpagertransformers.CubeOutTransformer;
 import com.eftimoff.viewpagertransformers.DefaultTransformer;
-import com.eftimoff.viewpagertransformers.DepthPageTransformer;
-import com.eftimoff.viewpagertransformers.ZoomInTransformer;
 
 import java.io.File;
 import java.net.URLConnection;
@@ -49,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     ViewPager mainViewPager;
     SpringIndicator indicator;
     MainPagerAdapter mainPagerAdapter;
+    ArrayList<Bitmap> bitmapArrayList;
 
     Context context;
 
@@ -61,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
         context = this;
         foldersModelArrayList = new ArrayList<>();
         foldersModelArrayListVideos = new ArrayList<>();
+        bitmapArrayList=new ArrayList<>();
+
 
         toolbar = findViewById(R.id.mainActivityToolBar);
 
@@ -128,14 +127,12 @@ public class MainActivity extends AppCompatActivity {
                 null,       // Selection arguments (none)
                 orderBy + " DESC"       // Ordering
         );
-
         if (cur.moveToFirst()) {
             String bucket;
             String date;
             int columnIndex = cur.getColumnIndex(MediaStore.Video.Media.DATA);
             int bucketColumn = cur.getColumnIndex(
                     MediaStore.Video.Media.BUCKET_DISPLAY_NAME);
-
             int dateColumn = cur.getColumnIndex(
                     MediaStore.Video.Media.DATE_TAKEN);
 
@@ -163,8 +160,6 @@ public class MainActivity extends AppCompatActivity {
                     imageModel.setTitle(bucket);
                     imageModel.setUrl(cur.getString(columnIndex));
                     imageModel.setDate(dateTime);
-
-                    //set it is a video to true
                     imageModel.setAVideo(true);
 
                     if (!map.containsKey(bucket)) {
@@ -187,8 +182,8 @@ public class MainActivity extends AppCompatActivity {
                 FoldersModel foldersModel = new FoldersModel();
                 foldersModel.setFoldersName(me.getKey());
                 foldersModel.setImageModelsList(me.getValue());
-                for(int i=0;i<me.getValue().size();i++){
-                    Log.d("VIDEOURIS",me.getValue().get(i).getUrl());
+                for (int i = 0; i < me.getValue().size(); i++) {
+                    Log.d("VIDEOURIS", me.getValue().get(i).getUrl());
                 }
                 foldersModelArrayListVideos.add(foldersModel);
             }

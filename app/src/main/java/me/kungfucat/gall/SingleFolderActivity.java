@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -172,12 +173,6 @@ public class SingleFolderActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 vibrator.vibrate(50);
-                numbersSelected = 0;
-                isInSelectionMode = false;
-                selectionToolbar.setVisibility(View.GONE);
-                toolbar.setVisibility(View.VISIBLE);
-                Arrays.fill(selectedPositions, false);
-                adapter.setSelectedIds(selectedPositions);
 
                 ArrayList<Uri> files = new ArrayList<>();
                 for (int i = 0; i < imageModelsList.size() + 5; i++) {
@@ -187,6 +182,15 @@ public class SingleFolderActivity extends AppCompatActivity {
                         files.add(uri);
                     }
                 }
+                Log.d("SELECTEDIMAGES",files.toString());
+
+                numbersSelected = 0;
+                isInSelectionMode = false;
+                selectionToolbar.setVisibility(View.GONE);
+                toolbar.setVisibility(View.VISIBLE);
+                Arrays.fill(selectedPositions, false);
+                adapter.setSelectedIds(selectedPositions);
+
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_SEND_MULTIPLE);
                 intent.putExtra(Intent.EXTRA_SUBJECT, "");
@@ -200,6 +204,7 @@ public class SingleFolderActivity extends AppCompatActivity {
         selectionDeleteIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                vibrator.vibrate(50);
 //                for (int i = 0; i < imageModelsList.size(); i++) {
 //                    if (selectedPositions[i]) {
 //                        File file = new File(imageModelsList.get(i).getUrl());
