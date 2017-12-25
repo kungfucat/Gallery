@@ -11,10 +11,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -220,33 +220,38 @@ public class SingleFolderActivity extends AppCompatActivity {
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                ArrayList<ImageModel> modelsToDelete = new ArrayList<>();
-                                for (int i = 0; i < imageModelsList.size(); i++) {
+                                ArrayList<Integer> positionsToDelete = new ArrayList<>();
+                                for (int i = imageModelsList.size() - 1; i >= 0; i--) {
                                     if (selectedPositions[i]) {
-                                        File file = new File(imageModelsList.get(i).getUrl());
-                                        Uri uri = Uri.fromFile(file);
-                                        modelsToDelete.add(imageModelsList.get(i));
+                                        positionsToDelete.add(i);
                                     }
                                 }
-                                for (int i = 0; i < modelsToDelete.size(); i++) {
-                                    File file = new File(String.valueOf(modelsToDelete.get(i)));
-                                    if (file.exists() && file.delete()) {
-                                        Log.d("FILEDELETED",i+"");
-                                        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(String.valueOf(urisToDelete.get(i))))));
-                                        imageModelsList.remove(i);
+
+                                int a=0;
+                                for (int i = 0; i < positionsToDelete.size(); i++) {
+                                    int pos = positionsToDelete.get(i);
+                                    File file = new File(imageModelsList.get(pos).getUrl());
+                                    if (file.delete()) {
+                                        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
+                                        imageModelsList.remove(pos);
+                                    } else {
+                                        a=1;
                                     }
                                 }
-                                finish();
-                                Intent intent = new Intent(context, SingleFolderActivity.class);
-                                intent.putExtra("bucket", finalTitle);
-                                intent.putParcelableArrayListExtra("data", imageModelsList);
-                                startActivity(intent);
-//                                numbersSelected = 0;
-//                                isInSelectionMode = false;
-//                                selectionToolbar.setVisibility(View.GONE);
-//                                toolbar.setVisibility(View.VISIBLE);
-//                                Arrays.fill(selectedPositions, false);
-//                                adapter.setSelectedIds(selectedPositions);
+                                if(a==0){
+                                    Toast.makeText(context, "Successfully Deleted", Toast.LENGTH_SHORT).show();
+                                }
+                                numbersSelected = 0;
+                                isInSelectionMode = false;
+                                selectionToolbar.setVisibility(View.GONE);
+                                toolbar.setVisibility(View.VISIBLE);
+                                Arrays.fill(selectedPositions, false);
+                                adapter.setSelectedIds(selectedPositions);
+
+                                if(imageModelsList.size()==0){
+                                    Intent intent=new Intent(context,MainActivity.class);
+                                    startActivity(intent);
+                                }
                             }
                         })
                         .setNegativeText("No")
