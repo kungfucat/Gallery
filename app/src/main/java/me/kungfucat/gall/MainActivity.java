@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     ViewPager mainViewPager;
     SpringIndicator indicator;
     MainPagerAdapter mainPagerAdapter;
-    ArrayList<Bitmap> bitmapArrayList;
+
 
     Context context;
 
@@ -58,8 +58,6 @@ public class MainActivity extends AppCompatActivity {
         context = this;
         foldersModelArrayList = new ArrayList<>();
         foldersModelArrayListVideos = new ArrayList<>();
-        bitmapArrayList=new ArrayList<>();
-
 
         toolbar = findViewById(R.id.mainActivityToolBar);
 
@@ -80,8 +78,12 @@ public class MainActivity extends AppCompatActivity {
                         REQUEST_PERMISSIONS_CODE);
             }
         } else {
-            loadImages();
             loadVideos();
+            loadImages();
+//
+//            BuildBitmaps buildBitmaps=new BuildBitmaps();
+//            buildBitmaps.execute(foldersModelArrayListVideos);
+
         }
 
         mainPagerAdapter = new MainPagerAdapter(getSupportFragmentManager(), foldersModelArrayList);
@@ -95,8 +97,14 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_PERMISSIONS_CODE) {
             for (int i = 0; i < grantResults.length; i++) {
                 if (grantResults.length > 0 && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                    loadImages();
                     loadVideos();
+                    loadImages();
+
+
+//                    BuildBitmaps buildBitmaps=new BuildBitmaps();
+//                    buildBitmaps.execute(foldersModelArrayListVideos);
+
+
                 } else {
                     Toast.makeText(MainActivity.this, "Permission Denied", Toast.LENGTH_LONG).show();
                 }
@@ -307,5 +315,6 @@ public class MainActivity extends AppCompatActivity {
             return tabs[position];
         }
     }
+
 }
 

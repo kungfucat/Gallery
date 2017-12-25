@@ -1,20 +1,14 @@
 package me.kungfucat.gall;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.media.ThumbnailUtils;
-import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,12 +22,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     Context context;
     List<ImageModel> data = Collections.emptyList();
     boolean[] selectedIds;
+    String bucket;
 
-    public MyAdapter(Context context, List<ImageModel> list) {
+    public MyAdapter(Context context, List<ImageModel> list, String bucket) {
         data = list;
         this.context = context;
         inflater = LayoutInflater.from(context);
         selectedIds = new boolean[list.size() + 10];
+        this.bucket = bucket;
     }
 
 
@@ -63,24 +59,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                     .thumbnail(0.5f)
                     .placeholder(new ColorDrawable(Color.BLACK))
                     .into(previewImageView);
-
-            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams
-                    (ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER);
-            checkImageView.setLayoutParams(layoutParams);
         }
 
         //if is a video
         else if (data.get(position).getAVideo()) {
 
-            File file = new File(data.get(position).getUrl());
-            Bitmap bMap = ThumbnailUtils.createVideoThumbnail(file.getAbsolutePath(), MediaStore.Video.Thumbnails.MICRO_KIND);
-
             GlideApp.with(context)
                     .asBitmap()
-                    .override(100, 100)
-                    .load(bMap)
-
+                    .override(90, 90)
+                    .load(data.get(position).getUrl())
+                    .placeholder(new ColorDrawable(Color.parseColor("#000000")))
                     .into(previewImageView);
 
             ImageView playIcon = holder.playIcon;
@@ -111,4 +99,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             checkImageView = itemView.findViewById(R.id.selectedCheckIcon);
         }
     }
+
+//    class BuildBitmaps extends AsyncTask<String, Void, Void> {
+//
+//        @Override
+//        protected Void doInBackground(String... strings) {
+//            File file = new File(strings[0]);
+//            Bitmap bMap = ThumbnailUtils.createVideoThumbnail(file.getAbsolutePath(), MediaStore.Video.Thumbnails.MICRO_KIND);
+//            return null;
+//        }
+//
+//
+//    }
 }

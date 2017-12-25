@@ -76,8 +76,7 @@ public class SingleFolderActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 vibrator.vibrate(50);
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
+                finish();
             }
         });
 
@@ -86,7 +85,7 @@ public class SingleFolderActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         }
-        adapter = new MyAdapter(this, imageModelsList);
+        adapter = new MyAdapter(this, imageModelsList,title);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         SlideInLeftAnimationAdapter animationAdapter = new SlideInLeftAnimationAdapter(adapter);
         recyclerView.setAdapter(animationAdapter);
@@ -182,7 +181,7 @@ public class SingleFolderActivity extends AppCompatActivity {
                         files.add(uri);
                     }
                 }
-                Log.d("SELECTEDIMAGES",files.toString());
+                Log.d("SELECTEDIMAGES", files.toString());
 
                 numbersSelected = 0;
                 isInSelectionMode = false;
@@ -205,12 +204,6 @@ public class SingleFolderActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 vibrator.vibrate(50);
-//                for (int i = 0; i < imageModelsList.size(); i++) {
-//                    if (selectedPositions[i]) {
-//                        File file = new File(imageModelsList.get(i).getUrl());
-//                        Uri uri = Uri.fromFile(file);
-//                        Log.d("SELECTIONDELETE", i + "");
-//                    }
 
                 new MaterialStyledDialog
                         .Builder(context)
@@ -232,7 +225,7 @@ public class SingleFolderActivity extends AppCompatActivity {
                                     }
                                 }
 
-                                int a=0;
+                                int a = 0;
                                 for (int i = 0; i < positionsToDelete.size(); i++) {
                                     int pos = positionsToDelete.get(i);
                                     File file = new File(imageModelsList.get(pos).getUrl());
@@ -240,10 +233,10 @@ public class SingleFolderActivity extends AppCompatActivity {
                                         context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
                                         imageModelsList.remove(pos);
                                     } else {
-                                        a=1;
+                                        a = 1;
                                     }
                                 }
-                                if(a==0){
+                                if (a == 0) {
                                     Toast.makeText(context, "Successfully Deleted", Toast.LENGTH_SHORT).show();
                                 }
                                 numbersSelected = 0;
@@ -253,8 +246,8 @@ public class SingleFolderActivity extends AppCompatActivity {
                                 Arrays.fill(selectedPositions, false);
                                 adapter.setSelectedIds(selectedPositions);
 
-                                if(imageModelsList.size()==0){
-                                    Intent intent=new Intent(context,MainActivity.class);
+                                if (imageModelsList.size() == 0) {
+                                    Intent intent = new Intent(context, MainActivity.class);
                                     startActivity(intent);
                                 }
                             }
