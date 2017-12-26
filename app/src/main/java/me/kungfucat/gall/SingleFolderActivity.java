@@ -2,6 +2,7 @@ package me.kungfucat.gall;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,8 +12,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,13 +50,19 @@ public class SingleFolderActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.activity_single_folder);
+
         toolbar = findViewById(R.id.toolBarForSingleFolder);
         selectionToolbar = findViewById(R.id.selectionToolBar);
         recyclerView = findViewById(R.id.recyclerViewForAllImages);
         context = this;
 
         selectedFilePaths = new ArrayList<>();
+        imageModelsList = new ArrayList<>();
 
         imageModelsList = getIntent().getParcelableArrayListExtra("data");
         selectedPositions = new boolean[imageModelsList.size() + 10];
@@ -82,16 +90,27 @@ public class SingleFolderActivity extends AppCompatActivity {
 
 
         if (imageModelsList.isEmpty()) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+            finish();
         }
-        adapter = new MyAdapter(this, imageModelsList,title);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        adapter = new MyAdapter(this, imageModelsList, title);
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+        } else if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        }
+        else {
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        }
         SlideInLeftAnimationAdapter animationAdapter = new SlideInLeftAnimationAdapter(adapter);
         recyclerView.setAdapter(animationAdapter);
 
-        if (imageModelsList.get(0).getAVideo()) {
-            isAVideo = true;
+        try {
+            if (imageModelsList.get(0).getAVideo()) {
+                isAVideo = true;
+            }
+        } catch (Exception e) {
+
         }
 
         ImageView selectionBackArrow = findViewById(R.id.selectionBackArrow);
@@ -181,8 +200,6 @@ public class SingleFolderActivity extends AppCompatActivity {
                         files.add(uri);
                     }
                 }
-                Log.d("SELECTEDIMAGES", files.toString());
-
                 numbersSelected = 0;
                 isInSelectionMode = false;
                 selectionToolbar.setVisibility(View.GONE);

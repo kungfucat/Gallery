@@ -16,17 +16,8 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/mainActivityToolBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?android:attr/actionBarSize"
             android:background="#000000">
-
-
-            <!--<ImageView-->
-                <!--android:id="@+id/content_hamburger"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_gravity="left"-->
-                <!--android:padding="4dp"-->
-                <!--android:src="@drawable/ic_menu_90" />-->
 
             <TextView
                 android:layout_width="match_parent"

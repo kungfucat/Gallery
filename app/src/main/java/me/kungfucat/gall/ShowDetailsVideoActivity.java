@@ -21,6 +21,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
@@ -32,6 +34,7 @@ import android.widget.VideoView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.eftimoff.viewpagertransformers.AccordionTransformer;
 import com.eftimoff.viewpagertransformers.BackgroundToForegroundTransformer;
 import com.eftimoff.viewpagertransformers.CubeOutTransformer;
@@ -59,6 +62,12 @@ public class ShowDetailsVideoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.activity_show_details_video);
 
         imageModelArrayList = getIntent().getParcelableArrayListExtra("data");
@@ -398,11 +407,10 @@ public class ShowDetailsVideoActivity extends AppCompatActivity {
 
             GlideApp.with(this)
                     .load(uriOfVideo)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .thumbnail(0.5f)
                     .placeholder(new ColorDrawable(Color.BLACK))
                     .into(placeHolderImageView);
-
-
             return view;
         }
     }

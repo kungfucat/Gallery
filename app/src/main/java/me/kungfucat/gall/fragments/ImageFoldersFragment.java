@@ -1,6 +1,7 @@
 package me.kungfucat.gall.fragments;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -25,6 +26,7 @@ import me.kungfucat.gall.interfaces.OnItemClickListener;
  */
 
 public class ImageFoldersFragment extends Fragment {
+    RecyclerView recyclerView;
 
     public ImageFoldersFragment() {
 
@@ -43,16 +45,23 @@ public class ImageFoldersFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_image, container, false);
-        RecyclerView recyclerView = view.findViewById(R.id.imageFoldersRecyclerView);
+        recyclerView = view.findViewById(R.id.imageFoldersRecyclerView);
         Bundle bundle = getArguments();
 
         final ArrayList<FoldersModel> foldersModel = bundle.getParcelableArrayList("foldersData");
-        int position=bundle.getInt("position");
+        int position = bundle.getInt("position");
 
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        } else {
+            recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        }
+
         recyclerView.setAdapter(new FoldersAdapter(getContext(), foldersModel));
 
-        recyclerView.addOnItemTouchListener(new ImageClickedListener(getContext(), recyclerView,new OnItemClickListener() {
+        recyclerView.addOnItemTouchListener(new ImageClickedListener(getContext(), recyclerView, new OnItemClickListener() {
             @Override
             public void onItemClick(View view, final int position) {
                 Intent intent = new Intent(getContext(), SingleFolderActivity.class);
@@ -68,5 +77,20 @@ public class ImageFoldersFragment extends Fragment {
         }));
 
         return view;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        int currentOrientation = getResources().getConfiguration().orientation;
+
+        if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE){
+            recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        }
+        else {
+            recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        }
+
+
     }
 }

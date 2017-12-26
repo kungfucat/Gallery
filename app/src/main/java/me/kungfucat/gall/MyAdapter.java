@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -53,8 +55,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         if (!data.get(position).getAVideo()) {
             GlideApp.with(context)
-                    .asBitmap()
                     .load(data.get(position).getUrl())
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .override(200, 200)
                     .thumbnail(0.5f)
                     .placeholder(new ColorDrawable(Color.BLACK))
@@ -66,7 +68,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
             GlideApp.with(context)
                     .asBitmap()
-                    .override(90, 90)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .override(100, 100)
                     .load(data.get(position).getUrl())
                     .placeholder(new ColorDrawable(Color.parseColor("#000000")))
                     .into(previewImageView);

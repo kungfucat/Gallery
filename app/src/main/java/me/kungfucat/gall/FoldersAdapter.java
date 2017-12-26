@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
 import java.util.ArrayList;
 
 /**
@@ -40,6 +42,7 @@ public class FoldersAdapter extends RecyclerView.Adapter<FoldersAdapter.FolderVi
 
         GlideApp.with(context)
                 .load(foldersModelList.get(position).getImageModelsList().get(0).url)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .override(200, 200)
                 .thumbnail(0.5f)
                 .placeholder(new ColorDrawable(Color.BLACK))
@@ -62,7 +65,7 @@ public class FoldersAdapter extends RecyclerView.Adapter<FoldersAdapter.FolderVi
             super(itemView);
 
             foldersImageView = itemView.findViewById(R.id.foldersImageView);
-            folderName= itemView.findViewById(R.id.folderNameTextView);
+            folderName = itemView.findViewById(R.id.folderNameTextView);
         }
     }
 }
