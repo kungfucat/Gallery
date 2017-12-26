@@ -29,6 +29,5 @@
         android:layout_height="128dp"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop" />
-
     <!--adjust view bounds to protect aspect ratio-->
 </FrameLayout>

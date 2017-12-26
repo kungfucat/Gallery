@@ -1,6 +1,7 @@
 package me.kungfucat.gall;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -19,11 +20,14 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.eftimoff.viewpagertransformers.DefaultTransformer;
+import com.github.florent37.camerafragment.CameraFragment;
+import com.github.florent37.camerafragment.configuration.Configuration;
 
 import java.io.File;
 import java.net.URLConnection;
@@ -39,7 +43,7 @@ import github.chenupt.springindicator.SpringIndicator;
 import me.kungfucat.gall.fragments.ImageFoldersFragment;
 
 public class MainActivity extends AppCompatActivity {
-    //TODO: Remove the meta-data from manifest and re-enable the crash analytics
+
     private static final int REQUEST_PERMISSIONS_CODE = 100;
     ArrayList<FoldersModel> foldersModelArrayList;
     ArrayList<FoldersModel> foldersModelArrayListVideos;
@@ -95,8 +99,8 @@ public class MainActivity extends AppCompatActivity {
 
         mainPagerAdapter = new MainPagerAdapter(getSupportFragmentManager(), foldersModelArrayList);
         mainViewPager.setAdapter(mainPagerAdapter);
-        indicator.setViewPager(mainViewPager);
         mainViewPager.setPageTransformer(true, new DefaultTransformer());
+        indicator.setViewPager(mainViewPager);
     }
 
     @Override

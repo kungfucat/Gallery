@@ -31,14 +31,14 @@
 
         <github.chenupt.springindicator.SpringIndicator
             xmlns:app="http://schemas.android.com/apk/res-auto"
-            app:siTextSize="14sp"
+            app:siTextSize="15sp"
             app:siTextColor="@android:color/black"
             app:siSelectedTextColor="@color/colorPrimary"
             app:siIndicatorColor="@android:color/black"
             android:id="@+id/indicator"
             android:layout_width="match_parent"
             app:siRadiusMax="35dp"
-            android:layout_height="30dp"/>
+            android:layout_height="27dp"/>
 
 
         <android.support.v4.view.ViewPager

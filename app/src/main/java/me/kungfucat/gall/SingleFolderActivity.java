@@ -96,10 +96,9 @@ public class SingleFolderActivity extends AppCompatActivity {
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
-        } else if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+        } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
-        }
-        else {
+        } else {
             recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         }
         SlideInLeftAnimationAdapter animationAdapter = new SlideInLeftAnimationAdapter(adapter);
@@ -283,8 +282,31 @@ public class SingleFolderActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+
+        super.onConfigurationChanged(newConfig);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+        } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        } else {
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        }
+    }
+
+    @Override
     public void onBackPressed() {
-        finish();
+
+        if (!isInSelectionMode) {
+            finish();
+        } else {
+            numbersSelected = 0;
+            isInSelectionMode = false;
+            selectionToolbar.setVisibility(View.GONE);
+            toolbar.setVisibility(View.VISIBLE);
+            Arrays.fill(selectedPositions, false);
+            adapter.setSelectedIds(selectedPositions);
+        }
     }
 }
 

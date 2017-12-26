@@ -48,7 +48,12 @@ public class FoldersAdapter extends RecyclerView.Adapter<FoldersAdapter.FolderVi
                 .placeholder(new ColorDrawable(Color.BLACK))
                 .into(holder.foldersImageView);
 
-        holder.folderName.setText(foldersModelList.get(position).getFoldersName());
+        String textToShow=foldersModelList.
+                get(position).
+                getFoldersName()+
+                " ("+foldersModelList.get(position).getImageModelsList().size()+
+                ")";
+        holder.folderName.setText(textToShow);
 
     }
 
