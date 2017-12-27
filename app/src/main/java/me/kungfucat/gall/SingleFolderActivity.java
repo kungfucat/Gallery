@@ -73,8 +73,6 @@ public class SingleFolderActivity extends AppCompatActivity {
 
         final TextView toolbarTextView = findViewById(R.id.singleFolderToolbarTitle);
         toolbarTextView.setText(title);
-        toolbarTextView.setTextColor(Color.parseColor("#000000"));
-        toolbarTextView.setTextColor(Color.parseColor("#ffffff"));
 
         final Vibrator vibrator = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
         final ImageView toolBarBackArrow = findViewById(R.id.singleFoldertoolbarBackArrow);
@@ -84,13 +82,16 @@ public class SingleFolderActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 vibrator.vibrate(50);
-                finish();
+                Intent intent=new Intent(context,MainActivity.class);
+                startActivity(intent);
             }
         });
 
 
         if (imageModelsList.isEmpty()) {
+            Intent intent = new Intent(this, MainActivity.class);
             finish();
+            startActivity(intent);
         }
         adapter = new MyAdapter(this, imageModelsList, title);
 
@@ -298,7 +299,8 @@ public class SingleFolderActivity extends AppCompatActivity {
     public void onBackPressed() {
 
         if (!isInSelectionMode) {
-            finish();
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
         } else {
             numbersSelected = 0;
             isInSelectionMode = false;

@@ -48,13 +48,8 @@ public class FoldersAdapter extends RecyclerView.Adapter<FoldersAdapter.FolderVi
                 .placeholder(new ColorDrawable(Color.BLACK))
                 .into(holder.foldersImageView);
 
-        String textToShow=foldersModelList.
-                get(position).
-                getFoldersName()+
-                " ("+foldersModelList.get(position).getImageModelsList().size()+
-                ")";
-        holder.folderName.setText(textToShow);
-
+        holder.folderName.setText(foldersModelList.get(position).getFoldersName());
+        holder.folderSize.setText(foldersModelList.get(position).getImageModelsList().size()+"");
     }
 
     @Override
@@ -65,12 +60,14 @@ public class FoldersAdapter extends RecyclerView.Adapter<FoldersAdapter.FolderVi
     public class FolderViewHolder extends RecyclerView.ViewHolder {
         ImageView foldersImageView;
         TextView folderName;
+        TextView folderSize;
 
         public FolderViewHolder(View itemView) {
             super(itemView);
 
             foldersImageView = itemView.findViewById(R.id.foldersImageView);
             folderName = itemView.findViewById(R.id.folderNameTextView);
+            folderSize = itemView.findViewById(R.id.folderNumberImages);
         }
     }
 }

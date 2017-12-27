@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top|left"
         android:background="@drawable/ic_check_circle_white_24dp"
-        android:backgroundTint="@color/darkColour"
+        android:backgroundTint="@color/lightColour"
         android:elevation="1dp" />
 
     <ImageView

@@ -341,11 +341,11 @@ public class ShowDetailsActivity extends AppCompatActivity {
                                             Intent intent = new Intent(getActivity(), SingleFolderActivity.class);
                                             intent.putExtra("bucket", title);
                                             intent.putExtra("data", ShowDetailsActivity.imageModelArrayList);
+                                            getActivity().finish();
                                             startActivity(intent);
                                             Toast.makeText(getActivity(), "Successfully Deleted", Toast.LENGTH_LONG).show();
 
                                         } else {
-                                            getActivity().finish();
                                             Toast.makeText(getActivity(), "Unsuccessful", Toast.LENGTH_LONG).show();
                                         }
                                     }

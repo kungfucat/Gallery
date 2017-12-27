@@ -9,7 +9,7 @@
         android:layout_height="?android:attr/actionBarSize"
         android:background="#66000000"
         android:elevation="1dp"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -30,6 +30,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="left"
+                android:ellipsize="end"
+                android:singleLine="true"
                 android:text="@string/app_name"
                 android:textColor="#ffffff"
                 android:textSize="20sp" />
@@ -130,7 +132,7 @@
             android:padding="5dp"
             android:text="Set Image As"
             android:textColor="#ffffff"
-            android:textSize="14sp" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/editImage"
@@ -141,7 +143,7 @@
             android:padding="5dp"
             android:text="Edit Image"
             android:textColor="#ffffff"
-            android:textSize="14sp" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/cropImage"
@@ -152,7 +154,7 @@
             android:padding="5dp"
             android:text="Crop"
             android:textColor="#ffffff"
-            android:textSize="14sp" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/detailsOfImageInMore"
@@ -163,7 +165,7 @@
             android:padding="5dp"
             android:text="Details"
             android:textColor="#ffffff"
-            android:textSize="14sp" />
+            android:textSize="16sp" />
 
 
     </LinearLayout>
@@ -175,7 +177,7 @@
         android:layout_gravity="bottom"
         android:background="#66000000"
         android:elevation="1dp"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <LinearLayout
             android:layout_width="match_parent"

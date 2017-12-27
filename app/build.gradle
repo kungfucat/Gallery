@@ -67,7 +67,6 @@ dependencies {
 
     compile 'com.github.chenupt.android:springindicator:1.0.2@aar'
 
-    compile 'com.github.florent37:camerafragment:1.0.7'
 }
 
 apply plugin: 'com.google.gms.google-services'

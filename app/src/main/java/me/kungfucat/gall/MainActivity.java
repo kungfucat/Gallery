@@ -1,11 +1,11 @@
 package me.kungfucat.gall;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -20,14 +20,12 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eftimoff.viewpagertransformers.DefaultTransformer;
-import com.github.florent37.camerafragment.CameraFragment;
-import com.github.florent37.camerafragment.configuration.Configuration;
 
 import java.io.File;
 import java.net.URLConnection;
@@ -51,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     ViewPager mainViewPager;
     SpringIndicator indicator;
     MainPagerAdapter mainPagerAdapter;
-
+    TextView mainHeadingTextView;
 
     Context context;
 
@@ -65,8 +63,19 @@ public class MainActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_main);
+        mainHeadingTextView=findViewById(R.id.mainIconTop);
 
         context = this;
+
+        try{
+            Typeface custom_font = Typeface.createFromAsset(getAssets(),  "lobster.ttf");
+            mainHeadingTextView.setTypeface(custom_font);
+        }catch (Exception e){
+
+        }
+
+
+
         foldersModelArrayList = new ArrayList<>();
         foldersModelArrayListVideos = new ArrayList<>();
 

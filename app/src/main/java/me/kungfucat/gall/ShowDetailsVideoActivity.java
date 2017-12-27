@@ -170,8 +170,6 @@ public class ShowDetailsVideoActivity extends AppCompatActivity {
             final VideoView videoView = view.findViewById(R.id.videoView);
             final Uri fileUriOfVideo = Uri.parse(String.valueOf(new File(uriOfVideo)));
 
-            Log.d("VIDEOCURRENTLYPLAYING", String.valueOf(fileUriOfVideo));
-
             final Toolbar videoToolbar = view.findViewById(R.id.videoToolbar);
             ImageView videoToolbarBackArrow = view.findViewById(R.id.videoToolbarBackArrow);
             TextView videoToolbarTextView = view.findViewById(R.id.videoTitle);
@@ -357,11 +355,13 @@ public class ShowDetailsVideoActivity extends AppCompatActivity {
                                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
 
                                         if (videoToDelete.delete()) {
+
                                             getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(uriOfVideo))));
                                             ShowDetailsVideoActivity.imageModelArrayList.remove(pos - 1);
                                             Intent intent = new Intent(getActivity(), SingleFolderActivity.class);
                                             intent.putExtra("bucket", title);
                                             intent.putExtra("data", ShowDetailsVideoActivity.imageModelArrayList);
+                                            getActivity().finish();
                                             startActivity(intent);
                                             Toast.makeText(getActivity(), "Successfully Deleted", Toast.LENGTH_LONG).show();
 
