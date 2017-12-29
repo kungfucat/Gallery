@@ -1,6 +1,5 @@
 package me.kungfucat.gall;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -17,7 +16,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,6 +94,12 @@ public class ShowDetailsVideoActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
     public void setRandomPagerTransformer() {
         Random random = new Random();
 
@@ -153,8 +157,8 @@ public class ShowDetailsVideoActivity extends AppCompatActivity {
             return fragment;
         }
 
-        @SuppressLint("ClickableViewAccessibility")
-        @Nullable
+
+
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.fragment_video_detail, container, false);
@@ -193,8 +197,8 @@ public class ShowDetailsVideoActivity extends AppCompatActivity {
             String textToShow = title + " " + positionToShow + "/" + imageModelArrayList.size();
             videoToolbarTextView.setText(textToShow);
 
-            Uri uri=Uri.parse(uriOfVideo);
-            File file=new File(uriOfVideo);
+            Uri uri = Uri.parse(uriOfVideo);
+            File file = new File(uriOfVideo);
 
             String textView1String = "Name : " + uri.getLastPathSegment();
             String textView2String = "Path : " + uri;
@@ -217,8 +221,6 @@ public class ShowDetailsVideoActivity extends AppCompatActivity {
             }
 
             videoTextView4.setText(textView4String);
-
-
 
 
             MediaController mediaController = new MediaController(getContext());
@@ -361,8 +363,8 @@ public class ShowDetailsVideoActivity extends AppCompatActivity {
                                             Intent intent = new Intent(getActivity(), SingleFolderActivity.class);
                                             intent.putExtra("bucket", title);
                                             intent.putExtra("data", ShowDetailsVideoActivity.imageModelArrayList);
-                                            getActivity().finish();
                                             startActivity(intent);
+                                            getActivity().finish();
                                             Toast.makeText(getActivity(), "Successfully Deleted", Toast.LENGTH_LONG).show();
 
                                         } else {

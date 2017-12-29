@@ -77,21 +77,21 @@ public class SingleFolderActivity extends AppCompatActivity {
         final Vibrator vibrator = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
         final ImageView toolBarBackArrow = findViewById(R.id.singleFoldertoolbarBackArrow);
 
-        final String finalTitle = title;
         toolBarBackArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 vibrator.vibrate(50);
                 Intent intent=new Intent(context,MainActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
 
 
         if (imageModelsList.isEmpty()) {
             Intent intent = new Intent(this, MainActivity.class);
-            finish();
             startActivity(intent);
+            finish();
         }
         adapter = new MyAdapter(this, imageModelsList, title);
 
@@ -266,6 +266,7 @@ public class SingleFolderActivity extends AppCompatActivity {
                                 if (imageModelsList.size() == 0) {
                                     Intent intent = new Intent(context, MainActivity.class);
                                     startActivity(intent);
+                                    finish();
                                 }
                             }
                         })
@@ -301,6 +302,7 @@ public class SingleFolderActivity extends AppCompatActivity {
         if (!isInSelectionMode) {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+            finish();
         } else {
             numbersSelected = 0;
             isInSelectionMode = false;

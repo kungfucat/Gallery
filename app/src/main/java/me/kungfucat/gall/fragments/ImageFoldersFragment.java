@@ -67,7 +67,7 @@ public class ImageFoldersFragment extends Fragment {
                 Intent intent = new Intent(getContext(), SingleFolderActivity.class);
                 intent.putParcelableArrayListExtra("data", foldersModel.get(position).getImageModelsList());
                 intent.putExtra("bucket", foldersModel.get(position).getFoldersName());
-                startActivity(intent);
+                getActivity().startActivity(intent);
             }
 
             @Override

@@ -3,7 +3,6 @@ package me.kungfucat.gall;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -26,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eftimoff.viewpagertransformers.DefaultTransformer;
+import com.github.clans.fab.FloatingActionButton;
 
 import java.io.File;
 import java.net.URLConnection;
@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
     SpringIndicator indicator;
     MainPagerAdapter mainPagerAdapter;
     TextView mainHeadingTextView;
-
     Context context;
 
 
@@ -63,17 +62,16 @@ public class MainActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_main);
-        mainHeadingTextView=findViewById(R.id.mainIconTop);
 
+        mainHeadingTextView = findViewById(R.id.mainIconTop);
         context = this;
 
-        try{
-            Typeface custom_font = Typeface.createFromAsset(getAssets(),  "lobster.ttf");
+        try {
+            Typeface custom_font = Typeface.createFromAsset(getAssets(), "lobster.ttf");
             mainHeadingTextView.setTypeface(custom_font);
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
-
 
 
         foldersModelArrayList = new ArrayList<>();
@@ -100,9 +98,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             loadVideos();
             loadImages();
-//
-//            BuildBitmaps buildBitmaps=new BuildBitmaps();
-//            buildBitmaps.execute(foldersModelArrayListVideos);
 
         }
 
@@ -119,12 +114,6 @@ public class MainActivity extends AppCompatActivity {
                 if (grantResults.length > 0 && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                     loadVideos();
                     loadImages();
-
-
-//                    BuildBitmaps buildBitmaps=new BuildBitmaps();
-//                    buildBitmaps.execute(foldersModelArrayListVideos);
-
-
                 } else {
                     Toast.makeText(MainActivity.this, "Permission Denied", Toast.LENGTH_LONG).show();
                 }
@@ -336,5 +325,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }
 

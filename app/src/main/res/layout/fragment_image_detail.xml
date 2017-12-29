@@ -9,7 +9,7 @@
         android:layout_height="?android:attr/actionBarSize"
         android:background="#66000000"
         android:elevation="1dp"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -177,7 +177,7 @@
         android:layout_gravity="bottom"
         android:background="#66000000"
         android:elevation="1dp"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"

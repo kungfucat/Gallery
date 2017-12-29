@@ -58,15 +58,18 @@ dependencies {
 
     //image cropping library
     compile 'com.theartofdev.edmodo:android-image-cropper:2.6.0'
-
-    compile 'com.google.firebase:firebase-crash:11.6.2'
-
-    compile('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
-        transitive = true
-    }
+//
+//    compile 'com.google.firebase:firebase-crash:11.6.2'
+//
+//    compile('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
+//        transitive = true
+//    }
 
     compile 'com.github.chenupt.android:springindicator:1.0.2@aar'
 
+    compile 'cat.ereza:customactivityoncrash:2.2.0'
+
+    compile 'com.github.clans:fab:1.6.4'
 }
 
 apply plugin: 'com.google.gms.google-services'
